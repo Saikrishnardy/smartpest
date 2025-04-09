@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "599115428194",
+    "project_id": "frontend-dd37c",
+    "storage_bucket": "frontend-dd37c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599115428194:android:f55f9ae97b80a03c00bc3b",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfXsCtczmXuryjUVIVYP72nUrDgzyDStM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599115428194:android:d96223bda060817c00bc3b",
+        "android_client_info": {
+          "package_name": "com.example.smartpest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfXsCtczmXuryjUVIVYP72nUrDgzyDStM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
