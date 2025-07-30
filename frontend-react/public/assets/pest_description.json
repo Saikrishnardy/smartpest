@@ -1,0 +1,526 @@
+[
+    {
+      "pest_name": "Adristyrannus",
+      "description": "A lesser-known pest, likely a type of insect affecting specific crops, characterized by its small size and potential to damage plant tissues."
+    },
+    {
+      "pest_name": "Aleurocanthus_spiniferus",
+      "description": "A species of whitefly with spiny features, known for feeding on plant sap and transmitting plant viruses, often found on citrus crops."
+    },
+    {
+      "pest_name": "Ampelophaga",
+      "description": "A genus of moths whose larvae feed on grapevines and other plants, causing defoliation and reduced crop yield."
+    },
+    {
+      "pest_name": "Aphis_citricola_Vander_Goot",
+      "description": "A citrus aphid that feeds on the sap of citrus trees, leading to curled leaves, stunted growth, and sooty mold growth."
+    },
+    {
+      "pest_name": "Apolygus_lucorum",
+      "description": "A green mirid bug that damages a variety of crops, including cotton and fruits, by piercing plant tissues and sucking sap."
+    },
+    {
+      "pest_name": "Bactrocera_tsuneonis",
+      "description": "A fruit fly species that lays eggs in fruits, particularly citrus, causing rot and significant agricultural losses."
+    },
+    {
+      "pest_name": "Beet_spot_flies",
+      "description": "Small flies that target beet crops, laying eggs on leaves and causing spotting and damage to foliage."
+    },
+    {
+      "pest_name": "Black_hairy",
+      "description": "A caterpillar with dark, hairy features, known for feeding on a variety of plants and causing defoliation."
+    },
+    {
+      "pest_name": "Brevipoalpus_lewisi_McGregor",
+      "description": "A tiny mite species that feeds on citrus and other plants, causing stippling and reduced photosynthesis."
+    },
+    {
+      "pest_name": "Ceroplastes_rubens",
+      "description": "A red wax scale insect that infests trees and shrubs, secreting a waxy coating and weakening plants by sap extraction."
+    },
+    {
+      "pest_name": "Chlumetia_transversa",
+      "description": "A moth whose larvae bore into plant stems, particularly affecting fruit trees and causing structural damage."
+    },
+    {
+      "pest_name": "Chrysomphalus_aonidum",
+      "description": "A circular scale insect that attacks citrus and ornamental plants, leading to yellowing leaves and reduced vigor."
+    },
+    {
+      "pest_name": "Cicadella_viridis",
+      "description": "A green leafhopper that feeds on plant sap, potentially transmitting plant pathogens and causing leaf yellowing."
+    },
+    {
+      "pest_name": "Cicadellidae",
+      "description": "A family of leafhoppers known for their jumping ability, feeding on plant sap and spreading viral diseases."
+    },
+    {
+      "pest_name": "Colomerus_vitis",
+      "description": "A grape erineum mite that causes abnormal growths (erinea) on grape leaves, reducing photosynthesis."
+    },
+    {
+      "pest_name": "Dacus_dorsalis(Hendel)",
+      "description": "The oriental fruit fly, a major pest of fruits and vegetables, laying eggs that lead to maggot infestations."
+    },
+    {
+      "pest_name": "Dasineura_sp",
+      "description": "A genus of gall midges whose larvae induce gall formation on plants, disrupting growth and development."
+    },
+    {
+      "pest_name": "Deporaus_marginatus_Pascoe",
+      "description": "A weevil species that bores into seeds and stems, causing damage to crops like nuts and legumes."
+    },
+    {
+      "pest_name": "Erythroneura_apicalis",
+      "description": "A leafhopper that feeds on grapevines and other plants, causing stippling and reduced fruit quality."
+    },
+    {
+      "pest_name": "FieldCricket",
+      "description": "A common cricket that feeds on crops and seedlings, particularly in fields, causing irregular damage."
+    },
+    {
+      "pest_name": "Fruit_piercing_moth",
+      "description": "A moth whose adults pierce fruit to feed on juice, leading to rot and secondary infections."
+    },
+    {
+      "pest_name": "Gall_fly",
+      "description": "A small fly that induces gall formation on plants, disrupting nutrient flow and growth."
+    },
+    {
+      "pest_name": "Icerya_purchasi_Maskell",
+      "description": "The cottony cushion scale, a pest of citrus and ornamentals, secreting a white waxy coating and weakening plants."
+    },
+    {
+      "pest_name": "Indigo_caterpillar",
+      "description": "A caterpillar pest of indigo and other crops, feeding on leaves and causing significant defoliation."
+    },
+    {
+      "pest_name": "JuteStemWeevil",
+      "description": "A weevil that bores into jute stems, weakening the plant and reducing fiber quality."
+    },
+    {
+      "pest_name": "Jute_aphid",
+      "description": "A small sap-sucking insect that affects jute plants, causing curled leaves and stunted growth."
+    },
+    {
+      "pest_name": "Jute_hairy",
+      "description": "A hairy caterpillar that feeds on jute leaves, leading to defoliation and reduced yield."
+    },
+    {
+      "pest_name": "Jute_red_mite",
+      "description": "A red mite that infests jute plants, causing stippling and yellowing of leaves."
+    },
+    {
+      "pest_name": "Jute_semilooper",
+      "description": "A looping caterpillar that feeds on jute foliage, creating holes and reducing plant vigor."
+    },
+    {
+      "pest_name": "Jute_stem_girdler",
+      "description": "A pest that girdles jute stems, disrupting nutrient transport and causing plant death."
+    },
+    {
+      "pest_name": "Jute_stick_insect",
+      "description": "A stick-like insect that blends into jute plants, feeding on sap and weakening stems."
+    },
+    {
+      "pest_name": "Lawana_imitataMelichar",
+      "description": "A leafhopper species that feeds on plant sap, potentially transmitting diseases to crops."
+    },
+    {
+      "pest_name": "Leaf_beetle",
+      "description": "A beetle that feeds on leaves, creating holes and reducing photosynthesis in various crops."
+    },
+    {
+      "pest_name": "Limacodidae",
+      "description": "A family of slug-like caterpillars that feed on foliage, often causing severe defoliation."
+    },
+    {
+      "pest_name": "Locust",
+      "description": "A swarming grasshopper that devastates crops by consuming leaves, stems, and grains."
+    },
+    {
+      "pest_name": "Locustoidea",
+      "description": "A superfamily of locusts and grasshoppers known for their destructive feeding habits."
+    },
+    {
+      "pest_name": "Lycorma_delicatula",
+      "description": "The spotted lanternfly, a sap-feeding pest that weakens trees and promotes mold growth."
+    },
+    {
+      "pest_name": "Mango_flat_beak_leafhopper",
+      "description": "A leafhopper with a flattened beak, feeding on mango trees and potentially spreading pathogens."
+    },
+    {
+      "pest_name": "Mealybug",
+      "description": "A soft-bodied insect covered in white wax, feeding on plant sap and excreting honeydew."
+    },
+    {
+      "pest_name": "Miridae",
+      "description": "A family of plant bugs that pierce and suck sap from crops, causing wilting and distortion."
+    },
+    {
+      "pest_name": "Nipaecoccus_vastalor",
+      "description": "A mealybug species that infests palms and other plants, weakening them through sap extraction."
+    },
+    {
+      "pest_name": "Panonchus_citriMcGregor",
+      "description": "The citrus red mite, a pest that damages citrus leaves, causing stippling and drop."
+    },
+    {
+      "pest_name": "Papilio_xuthus",
+      "description": "A swallowtail butterfly whose larvae feed on citrus leaves, causing defoliation."
+    },
+    {
+      "pest_name": "Parlatoria_zizyphusLucus",
+      "description": "A scale insect that infests citrus and jujube trees, reducing plant vigor through sap feeding."
+    },
+    {
+      "pest_name": "Phyllocnistis_citrellaStainton",
+      "description": "The citrus leafminer, a moth whose larvae tunnel into leaves, causing curling and damage."
+    },
+    {
+      "pest_name": "Phyllocoptes_oleiverus_ashmead",
+      "description": "A mite that affects olive trees, causing leaf distortion and reduced fruit production."
+    },
+    {
+      "pest_name": "Pieris_canidia",
+      "description": "A white butterfly whose larvae feed on cruciferous crops, leading to significant leaf damage."
+    },
+    {
+      "pest_name": "Pod_borer",
+      "description": "A larval pest that bores into pods of legumes, destroying seeds and reducing yield."
+    },
+    {
+      "pest_name": "Polyphagotars_onemus_latus",
+      "description": "A broad mite that damages a wide range of plants, causing leaf curling and stunting."
+    },
+    {
+      "pest_name": "Potosiabre_vitarsis",
+      "description": "A pest, likely a caterpillar, that feeds on foliage, causing damage to various crops."
+    },
+    {
+      "pest_name": "Prodenia_litura",
+      "description": "The tobacco cutworm, a caterpillar that feeds on a wide range of crops, causing extensive damage."
+    },
+    {
+      "pest_name": "Pseudococcus_comstockiKuwana",
+      "description": "The Comstock mealybug, a sap-feeding pest that affects fruits and ornamentals."
+    },
+    {
+      "pest_name": "Rhytidodera_bowrinii_white",
+      "description": "A longhorn beetle that bores into wood, damaging trees and woody crops."
+    },
+    {
+      "pest_name": "RiceStemfly",
+      "description": "A fly whose larvae bore into rice stems, causing dead hearts and reduced yield."
+    },
+    {
+      "pest_name": "Salurnis_marginellaGuerr",
+      "description": "A moth pest that affects crops, with larvae feeding on leaves and stems."
+    },
+    {
+      "pest_name": "Scirtothrips_dorsalisHood",
+      "description": "The chili thrips, a tiny pest that damages leaves and buds of various plants."
+    },
+    {
+      "pest_name": "Sternochetus_frigidus",
+      "description": "The mango seed weevil, boring into mango seeds and reducing fruit quality."
+    },
+    {
+      "pest_name": "Termite",
+      "description": "A social insect that damages crops and wooden structures by feeding on cellulose."
+    },
+    {
+      "pest_name": "Termite_odontotermes(Rambur)",
+      "description": "A termite species that attacks crops and trees, causing structural damage."
+    },
+    {
+      "pest_name": "Tetradacus_cBactrocera_minax",
+      "description": "A citrus fruit fly that lays eggs in fruit, leading to maggot damage and rot."
+    },
+    {
+      "pest_name": "Thrips",
+      "description": "Tiny insects that feed on plant cells, causing silvering and distortion of leaves."
+    },
+    {
+      "pest_name": "Toxoptera_aurantii",
+      "description": "The black citrus aphid, a sap-sucking pest that affects citrus trees."
+    },
+    {
+      "pest_name": "Toxoptera_citricidus",
+      "description": "The brown citrus aphid, known for transmitting citrus tristeza virus."
+    },
+    {
+      "pest_name": "Trialeurodes_vaporariorum",
+      "description": "The greenhouse whitefly, a pest of greenhouse crops, feeding on sap and spreading viruses."
+    },
+    {
+      "pest_name": "Unaspis_yanonensis",
+      "description": "The arrowhead scale, a pest of citrus, forming dark scales and weakening plants."
+    },
+    {
+      "pest_name": "Viteus_vitifoliae",
+      "description": "The grape phylloxera, a root-feeding aphid that devastates vineyards."
+    },
+    {
+      "pest_name": "Xylotrechus",
+      "description": "A longhorn beetle that bores into wood, damaging trees and woody crops."
+    },
+    {
+      "pest_name": "Yellow_Mite",
+      "description": "A yellow-colored mite that feeds on plant sap, causing stippling and leaf drop."
+    },
+    {
+      "pest_name": "alfalfa_plant_bug",
+      "description": "A bug that feeds on alfalfa, piercing stems and leaves, reducing forage quality."
+    },
+    {
+      "pest_name": "alfalfa_seed_chalcid",
+      "description": "A tiny wasp that lays eggs in alfalfa seeds, destroying them and reducing seed yield."
+    },
+    {
+      "pest_name": "alfalfa_weevil",
+      "description": "A beetle whose larvae feed on alfalfa leaves, causing significant defoliation."
+    },
+    {
+      "pest_name": "aphids",
+      "description": "Small sap-sucking insects that weaken plants and transmit viruses across various crops."
+    },
+    {
+      "pest_name": "army_worm",
+      "description": "A caterpillar that moves in large groups, devouring crops like grasses and grains."
+    },
+    {
+      "pest_name": "asiatic_rice_borer",
+      "description": "A moth whose larvae bore into rice stems, causing dead hearts and yield loss."
+    },
+    {
+      "pest_name": "beet_army_worm",
+      "description": "A caterpillar pest of beets and other crops, feeding on leaves and stems."
+    },
+    {
+      "pest_name": "beet_fly",
+      "description": "A fly that lays eggs on beet leaves, with larvae causing mines and damage."
+    },
+    {
+      "pest_name": "beet_weevil",
+      "description": "A weevil that feeds on beet roots and foliage, reducing crop quality."
+    },
+    {
+      "pest_name": "beetle",
+      "description": "A general term for various beetles that damage crops by feeding on leaves or roots."
+    },
+    {
+      "pest_name": "bird_cherry-oataphid",
+      "description": "An aphid that infests cereals and grasses, transmitting viruses and reducing yield."
+    },
+    {
+      "pest_name": "black_cutworm",
+      "description": "A caterpillar that cuts young plants at the base, particularly affecting corn and vegetables."
+    },
+    {
+      "pest_name": "blister_beetle",
+      "description": "A beetle that feeds on crops and can release toxic chemicals, damaging plants and livestock."
+    },
+    {
+      "pest_name": "bollworm",
+      "description": "A caterpillar that bores into cotton bolls and other fruits, causing significant damage."
+    },
+    {
+      "pest_name": "brown_plant_hopper",
+      "description": "A sap-sucking pest of rice, causing hopper burn and transmitting viral diseases."
+    },
+    {
+      "pest_name": "cabbage_army_worm",
+      "description": "A caterpillar that feeds on cabbage and other crucifers, causing extensive leaf damage."
+    },
+    {
+      "pest_name": "cerodonta_denticornis",
+      "description": "A leafhopper that feeds on plant sap, potentially affecting a range of crops."
+    },
+    {
+      "pest_name": "corn_borer",
+      "description": "A moth larva that bores into corn stalks and ears, reducing yield and quality."
+    },
+    {
+      "pest_name": "corn_earworm",
+      "description": "A caterpillar that feeds on corn ears and other crops, causing direct damage to fruits."
+    },
+    {
+      "pest_name": "cutworm",
+      "description": "A caterpillar that cuts young plants at the soil line, affecting a variety of crops."
+    },
+    {
+      "pest_name": "english_grain_aphid",
+      "description": "An aphid that infests grains like wheat and barley, reducing yield and quality."
+    },
+    {
+      "pest_name": "fall_armyworm",
+      "description": "A migratory caterpillar that attacks a wide range of crops, including corn and grasses."
+    },
+    {
+      "pest_name": "flax_budworm",
+      "description": "A caterpillar that feeds on flax buds and flowers, reducing seed production."
+    },
+    {
+      "pest_name": "flea_beetle",
+      "description": "A small beetle that jumps like a flea, feeding on leaves and creating small holes."
+    },
+    {
+      "pest_name": "grain_spreader_thrips",
+      "description": "A thrips species that damages grains, causing silvering and reduced grain quality."
+    },
+    {
+      "pest_name": "grasshopper",
+      "description": "A chewing insect that consumes leaves and stems of various crops, especially grasses."
+    },
+    {
+      "pest_name": "green_bug",
+      "description": "A green aphid that infests cereals and grasses, causing yellowing and stunting."
+    },
+    {
+      "pest_name": "grub",
+      "description": "The larval stage of beetles, feeding on roots and causing plant decline."
+    },
+    {
+      "pest_name": "large_cutworm",
+      "description": "A larger species of cutworm that severs young plants at the base, affecting crops."
+    },
+    {
+      "pest_name": "legume_blister_beetle",
+      "description": "A blister beetle that feeds on legumes, damaging pods and foliage."
+    },
+    {
+      "pest_name": "longlegged_spider_mite",
+      "description": "A mite with long legs that feeds on plant sap, causing stippling and webbing."
+    },
+    {
+      "pest_name": "lytta_polita",
+      "description": "A blister beetle that feeds on crops, potentially toxic to livestock if ingested."
+    },
+    {
+      "pest_name": "meadow_moth",
+      "description": "A moth whose larvae feed on grasses and crops, causing defoliation."
+    },
+    {
+      "pest_name": "mites",
+      "description": "Tiny arachnids that feed on plant sap, causing stippling, yellowing, and webbing."
+    },
+    {
+      "pest_name": "mole_cricket",
+      "description": "A burrowing insect that damages roots and tubers, disrupting plant growth."
+    },
+    {
+      "pest_name": "odontothrips_loti",
+      "description": "A thrips species that feeds on plant cells, causing damage to legumes and other crops."
+    },
+    {
+      "pest_name": "oides_decellantata",
+      "description": "A pest, possibly a mite or insect, that affects crops by feeding on leaves or sap."
+    },
+    {
+      "pest_name": "paddy_stem_maggot",
+      "description": "A maggot that bores into rice stems, causing dead hearts and reduced yield."
+    },
+    {
+      "pest_name": "parathrene_regalis",
+      "description": "A clearwing moth whose larvae bore into tree trunks, weakening woody plants."
+    },
+    {
+      "pest_name": "peach_borer",
+      "description": "A moth larva that bores into peach tree trunks, causing gum exudation and death."
+    },
+    {
+      "pest_name": "penthaleus_major",
+      "description": "A redlegged earth mite that feeds on seedlings, causing significant early damage."
+    },
+    {
+      "pest_name": "red_spider",
+      "description": "A common name for spider mites, feeding on plant sap and causing leaf stippling."
+    },
+    {
+      "pest_name": "rice_gall_midge",
+      "description": "A midge whose larvae induce galls in rice plants, disrupting growth and yield."
+    },
+    {
+      "pest_name": "rice_leaf_caterpillar",
+      "description": "A caterpillar that feeds on rice leaves, reducing photosynthesis and yield."
+    },
+    {
+      "pest_name": "rice_leaf_roller",
+      "description": "A moth larva that rolls rice leaves, feeding inside and causing damage."
+    },
+    {
+      "pest_name": "rice_leafhopper",
+      "description": "A sap-sucking pest of rice, transmitting viruses and causing hopper burn."
+    },
+    {
+      "pest_name": "rice_shell_pest",
+      "description": "A pest, possibly a snail or insect, that affects rice grains and shells."
+    },
+    {
+      "pest_name": "rice_water_weevil",
+      "description": "A weevil whose larvae feed on rice roots, causing yellowing and reduced growth."
+    },
+    {
+      "pest_name": "sawfly",
+      "description": "A wasp-like insect whose larvae feed on leaves, often defoliating trees and crops."
+    },
+    {
+      "pest_name": "sericaorient_alismots_chulsky",
+      "description": "A beetle pest that likely affects crops by feeding on roots or foliage."
+    },
+    {
+      "pest_name": "small_brown_plant_hopper",
+      "description": "A small hopper that feeds on rice sap, causing hopper burn and yield loss."
+    },
+    {
+      "pest_name": "stem_borer",
+      "description": "A larval pest that bores into plant stems, disrupting nutrient flow and yield."
+    },
+    {
+      "pest_name": "tarnished_plant_bug",
+      "description": "A bug that pierces and sucks sap from crops, causing wilting and fruit damage."
+    },
+    {
+      "pest_name": "therioaphis_maculataBuckton",
+      "description": "The spotted alfalfa aphid, a pest of legumes, causing yellowing and stunting."
+    },
+    {
+      "pest_name": "wheat_blossom_midge",
+      "description": "A midge that attacks wheat flowers, reducing grain set and yield."
+    },
+    {
+      "pest_name": "wheat_phloeothrips",
+      "description": "A thrips species that feeds on wheat, causing silvering and reduced grain quality."
+    },
+    {
+      "pest_name": "wheat_sawfly",
+      "description": "A sawfly whose larvae bore into wheat stems, causing lodging and yield loss."
+    },
+    {
+      "pest_name": "white_backed_plant_hopper",
+      "description": "A rice pest with a white back, feeding on sap and transmitting viral diseases."
+    },
+    {
+      "pest_name": "white_margined_moth",
+      "description": "A moth with white-edged wings, whose larvae feed on foliage of various crops."
+    },
+    {
+      "pest_name": "whitefly",
+      "description": "A small white insect that feeds on plant sap, spreading viruses and causing wilting."
+    },
+    {
+      "pest_name": "wireworm",
+      "description": "The larval stage of click beetles, feeding on roots and tubers underground."
+    },
+    {
+      "pest_name": "yellow_cutworm",
+      "description": "A yellowish caterpillar that cuts young plants at the base, affecting crop stands."
+    },
+    {
+      "pest_name": "yellow_rice_borer",
+      "description": "A moth larva that bores into rice stems, causing dead hearts and reduced yield."
+    }
+  ]
