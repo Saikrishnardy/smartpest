@@ -3,72 +3,82 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Card from '../components/Card';
 import Alert from '../components/Alert';
-import Table from '../components/Table';
-import Pagination from '../components/Pagination';
-import Dropdown from '../components/Dropdown';
 import BackgroundContainer from '../components/BackgroundContainer';
 
 function PestReportsPage() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchReports();
-  }, [currentPage, filter]);
-
-  const fetchReports = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      const params = new URLSearchParams({
-        page: currentPage,
-        filter: filter,
-        search: searchTerm
-      });
-
-      const response = await fetch(`http://localhost:8000/api/pest-reports/?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
+    // Simulate loading sample data
+    setTimeout(() => {
+      const sampleReports = [
+        {
+          id: 1,
+          date: '2024-01-15',
+          pest_name: 'Aphids',
+          confidence: 0.92,
+          user_name: 'User 1',
+          image_url: '/sample1.jpg'
         },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setReports(data.results || []);
-        setTotalPages(data.total_pages || 1);
-      } else {
-        setError('Failed to fetch reports');
-      }
-    } catch (err) {
-      setError('Network error while fetching reports');
-    } finally {
+        {
+          id: 2,
+          date: '2024-01-14',
+          pest_name: 'Spider Mites',
+          confidence: 0.87,
+          user_name: 'User 2',
+          image_url: '/sample2.jpg'
+        },
+        {
+          id: 3,
+          date: '2024-01-13',
+          pest_name: 'Whiteflies',
+          confidence: 0.89,
+          user_name: 'User 1',
+          image_url: '/sample3.jpg'
+        },
+        {
+          id: 4,
+          date: '2024-01-12',
+          pest_name: 'Mealybugs',
+          confidence: 0.85,
+          user_name: 'User 3',
+          image_url: '/sample4.jpg'
+        }
+      ];
+      setReports(sampleReports);
       setLoading(false);
-    }
-  };
+    }, 1000);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setCurrentPage(1);
-    fetchReports();
+    // In a real app, this would filter the reports
+    console.log('Searching for:', searchTerm);
   };
 
   const handleFilterChange = (value) => {
     setFilter(value);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+    console.log('Filter changed to:', value);
   };
 
   const handleViewReport = (reportId) => {
-    navigate(`/pest-result/${reportId}`);
+    console.log('Viewing report:', reportId);
+    // Navigate to a sample result
+    navigate('/pest-result', {
+      state: {
+        detectionResult: {
+          pest_name: reports.find(r => r.id === reportId)?.pest_name || 'Sample Pest',
+          confidence: reports.find(r => r.id === reportId)?.confidence || 0.85,
+          description: 'Sample pest detection result from reports',
+          recommendations: ['Use organic pesticides', 'Remove affected plants']
+        }
+      }
+    });
   };
 
   const handleDeleteReport = async (reportId) => {
@@ -76,24 +86,9 @@ function PestReportsPage() {
       return;
     }
 
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/pest-reports/${reportId}/`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        // Refresh reports
-        fetchReports();
-      } else {
-        setError('Failed to delete report');
-      }
-    } catch (err) {
-      setError('Network error while deleting report');
-    }
+    // Simulate deletion
+    setReports(reports.filter(report => report.id !== reportId));
+    console.log('Deleted report:', reportId);
   };
 
   const filterOptions = [
@@ -103,52 +98,18 @@ function PestReportsPage() {
     { value: 'low_confidence', label: 'Low Confidence' }
   ];
 
-  const tableColumns = [
-    { header: 'Date', accessor: 'date' },
-    { header: 'Pest Name', accessor: 'pest_name' },
-    { header: 'Confidence', accessor: 'confidence' },
-    { header: 'User', accessor: 'user' },
-    { header: 'Actions', accessor: 'actions' }
-  ];
-
-  const tableData = reports.map(report => ({
-    date: new Date(report.created_at).toLocaleDateString(),
-    pest_name: report.pest_name,
-    confidence: `${(report.confidence * 100).toFixed(1)}%`,
-    user: report.user_name,
-    actions: (
-      <div style={{ display: 'flex', gap: '5px' }}>
-        <button
-          onClick={() => handleViewReport(report.id)}
-          style={{
-            padding: '4px 8px',
-            background: '#2196f3',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '12px'
-          }}
-        >
-          View
-        </button>
-        <button
-          onClick={() => handleDeleteReport(report.id)}
-          style={{
-            padding: '4px 8px',
-            background: '#f44336',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '12px'
-          }}
-        >
-          Delete
-        </button>
-      </div>
-    )
-  }));
+  const filteredReports = reports.filter(report => {
+    if (searchTerm && !report.pest_name.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return false;
+    }
+    if (filter === 'high_confidence' && report.confidence < 0.8) {
+      return false;
+    }
+    if (filter === 'low_confidence' && report.confidence >= 0.8) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <BackgroundContainer>
@@ -180,11 +141,23 @@ function PestReportsPage() {
               }}>
                 Filter by:
               </label>
-              <Dropdown
-                options={filterOptions}
+              <select
                 value={filter}
                 onChange={(e) => handleFilterChange(e.target.value)}
-              />
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  fontSize: '14px'
+                }}
+              >
+                {filterOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div style={{ flex: 1, minWidth: '200px' }}>
@@ -252,23 +225,69 @@ function PestReportsPage() {
             <div style={{ textAlign: 'center', padding: '40px' }}>
               <div>Loading reports...</div>
             </div>
-          ) : reports.length > 0 ? (
+          ) : filteredReports.length > 0 ? (
             <>
               <div style={{ marginBottom: '20px' }}>
                 <h3 style={{ margin: 0, color: '#333' }}>
-                  Found {reports.length} report{reports.length !== 1 ? 's' : ''}
+                  Found {filteredReports.length} report{filteredReports.length !== 1 ? 's' : ''}
                 </h3>
               </div>
               
-              <Table columns={tableColumns} data={tableData} />
-              
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
-              )}
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ background: '#f5f5f5' }}>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Date</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Pest Name</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Confidence</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>User</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredReports.map(report => (
+                      <tr key={report.id} style={{ borderBottom: '1px solid #eee' }}>
+                        <td style={{ padding: '12px' }}>{new Date(report.date).toLocaleDateString()}</td>
+                        <td style={{ padding: '12px' }}>{report.pest_name}</td>
+                        <td style={{ padding: '12px' }}>{(report.confidence * 100).toFixed(1)}%</td>
+                        <td style={{ padding: '12px' }}>{report.user_name}</td>
+                        <td style={{ padding: '12px' }}>
+                          <div style={{ display: 'flex', gap: '5px' }}>
+                            <button
+                              onClick={() => handleViewReport(report.id)}
+                              style={{
+                                padding: '4px 8px',
+                                background: '#2196f3',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                              }}
+                            >
+                              View
+                            </button>
+                            <button
+                              onClick={() => handleDeleteReport(report.id)}
+                              style={{
+                                padding: '4px 8px',
+                                background: '#f44336',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </>
           ) : (
             <div style={{ textAlign: 'center', padding: '40px' }}>
@@ -311,15 +330,18 @@ function PestReportsPage() {
             </div>
           </Card>
           <Card style={{ textAlign: 'center', background: '#f3e5f5' }}>
-            <h3 style={{ margin: '0 0 10px 0', color: '#9c27b0' }}>This Page</h3>
+            <h3 style={{ margin: '0 0 10px 0', color: '#9c27b0' }}>Filtered Results</h3>
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#9c27b0' }}>
-              {reports.length}
+              {filteredReports.length}
             </div>
           </Card>
           <Card style={{ textAlign: 'center', background: '#e8f5e8' }}>
-            <h3 style={{ margin: '0 0 10px 0', color: '#4caf50' }}>Page</h3>
+            <h3 style={{ margin: '0 0 10px 0', color: '#4caf50' }}>Avg Confidence</h3>
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4caf50' }}>
-              {currentPage} of {totalPages}
+              {reports.length > 0 
+                ? `${((reports.reduce((sum, r) => sum + r.confidence, 0) / reports.length) * 100).toFixed(1)}%`
+                : '0%'
+              }
             </div>
           </Card>
         </div>
