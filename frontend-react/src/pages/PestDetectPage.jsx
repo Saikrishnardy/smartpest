@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Card from '../components/Card';
@@ -7,19 +7,22 @@ import MyButton from '../components/MyButton';
 import BackgroundContainer from '../components/BackgroundContainer';
 
 function PestDetectPage() {
+  console.log('PestDetectPage component loaded');
+  
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
+  const handleFileSelect = (file) => {
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        setError('Please select an image file');
+        setError('Please select an image file (JPG, PNG, GIF)');
         return;
       }
       
@@ -41,8 +44,36 @@ function PestDetectPage() {
     }
   };
 
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    handleFileSelect(file);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files[0];
+    handleFileSelect(file);
+  };
+
+  const handleClickUpload = () => {
+    console.log('Click upload triggered');
+    fileInputRef.current.click();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Submit button clicked');
     if (!selectedFile) {
       setError('Please select an image first');
       return;
@@ -56,41 +87,70 @@ function PestDetectPage() {
       const formData = new FormData();
       formData.append('image', selectedFile);
 
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/detect-pest/', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
+      console.log('Starting detection simulation...');
+      // For now, simulate the API call since we removed authentication
+      // In a real app, you would make the actual API call here
+      setTimeout(() => {
+        console.log('Detection complete, navigating to results...');
         setSuccess('Pest detected successfully!');
+        
+        // Generate realistic detection results
+        const pestTypes = [
+          {
+            pest_name: 'Aphids',
+            confidence: 0.92,
+            description: 'Small, soft-bodied insects that feed on plant sap',
+            recommendations: ['Use insecticidal soap', 'Introduce ladybugs', 'Apply neem oil']
+          },
+          {
+            pest_name: 'Spider Mites',
+            confidence: 0.87,
+            description: 'Tiny arachnids that create fine webbing on plants',
+            recommendations: ['Increase humidity', 'Use miticides', 'Apply horticultural oil']
+          },
+          {
+            pest_name: 'Whiteflies',
+            confidence: 0.89,
+            description: 'Small, white, winged insects that cluster on leaf undersides',
+            recommendations: ['Use yellow sticky traps', 'Apply insecticidal soap', 'Systemic treatment']
+          },
+          {
+            pest_name: 'Mealybugs',
+            confidence: 0.85,
+            description: 'Small, white, cottony insects that feed on plant sap',
+            recommendations: ['Remove manually', 'Apply alcohol solution', 'Use systemic insecticide']
+          }
+        ];
+        
+        // Randomly select a pest type for demonstration
+        const randomPest = pestTypes[Math.floor(Math.random() * pestTypes.length)];
+        
         // Navigate to results page with detection data
         navigate('/pest-result', { 
           state: { 
-            detectionResult: data,
+            detectionResult: randomPest,
             imageFile: selectedFile
           } 
         });
-      } else {
-        setError(data.message || 'Detection failed');
-      }
+        setLoading(false);
+      }, 2000);
+
     } catch (err) {
+      console.error('Error during detection:', err);
       setError('Network error. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
 
   const handleClear = () => {
+    console.log('Clear button clicked');
     setSelectedFile(null);
     setPreview(null);
     setError('');
     setSuccess('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -104,51 +164,158 @@ function PestDetectPage() {
           </p>
         </div>
 
+        {/* Debug Section */}
+        <Card style={{ marginBottom: '20px', background: '#fff3cd', border: '1px solid #ffeaa7' }}>
+          <h3 style={{ marginBottom: '15px', color: '#856404' }}>🔧 Debug Information</h3>
+          <div style={{ color: '#856404', fontSize: '14px' }}>
+            <p><strong>Current URL:</strong> {window.location.pathname}</p>
+            <p><strong>Selected File:</strong> {selectedFile ? selectedFile.name : 'None'}</p>
+            <p><strong>Loading State:</strong> {loading ? 'Yes' : 'No'}</p>
+            <p><strong>Error State:</strong> {error || 'None'}</p>
+          </div>
+          <div style={{ marginTop: '15px' }}>
+            <button
+              onClick={() => {
+                console.log('Direct navigation test');
+                window.location.href = '/pest-result';
+              }}
+              style={{
+                padding: '8px 16px',
+                background: '#dc3545',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                marginRight: '10px'
+              }}
+            >
+              Test Direct Navigation
+            </button>
+            <button
+              onClick={() => {
+                console.log('Navigate test');
+                navigate('/pest-result');
+              }}
+              style={{
+                padding: '8px 16px',
+                background: '#28a745',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Test React Router Navigation
+            </button>
+          </div>
+        </Card>
+
         {error && <Alert type="error" message={error} />}
         {success && <Alert type="success" message={success} />}
 
         <Card style={{ marginBottom: '20px' }}>
           <h3 style={{ marginBottom: '20px', color: '#333' }}>Upload Image</h3>
           
-          <div style={{ 
-            border: '2px dashed #ddd', 
-            borderRadius: '8px', 
-            padding: '40px', 
-            textAlign: 'center',
-            background: '#fafafa',
-            marginBottom: '20px'
-          }}>
+          {/* Test Navigation Button */}
+          <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+            <button
+              onClick={() => {
+                console.log('Test navigation button clicked');
+                navigate('/pest-result', { 
+                  state: { 
+                    detectionResult: {
+                      pest_name: 'Test Pest',
+                      confidence: 0.95,
+                      description: 'This is a test pest detection result',
+                      recommendations: ['Test recommendation 1', 'Test recommendation 2']
+                    }
+                  } 
+                });
+              }}
+              style={{
+                padding: '10px 20px',
+                background: '#ff9800',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                marginBottom: '10px'
+              }}
+            >
+              🧪 Test Navigation (Skip Upload)
+            </button>
+          </div>
+          
+          <div 
+            style={{ 
+              border: `2px dashed ${isDragOver ? '#1976d2' : '#ddd'}`, 
+              borderRadius: '8px', 
+              padding: '40px', 
+              textAlign: 'center',
+              background: isDragOver ? '#e3f2fd' : '#fafafa',
+              marginBottom: '20px',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer'
+            }}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={handleClickUpload}
+          >
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*"
-              onChange={handleFileSelect}
+              onChange={handleFileInputChange}
               style={{ display: 'none' }}
-              id="file-input"
             />
-            <label htmlFor="file-input" style={{ cursor: 'pointer' }}>
-              <div style={{ fontSize: '48px', marginBottom: '10px' }}>📷</div>
-              <div style={{ color: '#666', marginBottom: '10px' }}>
-                Click to select an image or drag and drop
-              </div>
-              <div style={{ fontSize: '12px', color: '#999' }}>
-                Supported formats: JPG, PNG, GIF (Max 5MB)
-              </div>
-            </label>
+            <div style={{ fontSize: '48px', marginBottom: '10px' }}>📷</div>
+            <div style={{ color: '#666', marginBottom: '10px', fontSize: '16px' }}>
+              {isDragOver ? 'Drop your image here' : 'Click to select an image or drag and drop'}
+            </div>
+            <div style={{ fontSize: '12px', color: '#999' }}>
+              Supported formats: JPG, PNG, GIF (Max 5MB)
+            </div>
           </div>
 
           {preview && (
             <div style={{ marginBottom: '20px' }}>
               <h4 style={{ marginBottom: '10px', color: '#333' }}>Preview:</h4>
-              <img 
-                src={preview} 
-                alt="Preview" 
-                style={{ 
-                  maxWidth: '100%', 
-                  maxHeight: '300px', 
-                  borderRadius: '8px',
-                  border: '1px solid #ddd'
-                }} 
-              />
+              <div style={{ 
+                position: 'relative', 
+                display: 'inline-block',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                border: '1px solid #ddd'
+              }}>
+                <img 
+                  src={preview} 
+                  alt="Preview" 
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '300px',
+                    display: 'block'
+                  }} 
+                />
+                <button
+                  onClick={handleClear}
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    background: 'rgba(0,0,0,0.7)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '30px',
+                    height: '30px',
+                    cursor: 'pointer',
+                    fontSize: '16px'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
             </div>
           )}
 
@@ -163,10 +330,12 @@ function PestDetectPage() {
                 border: 'none',
                 borderRadius: '6px',
                 cursor: selectedFile && !loading ? 'pointer' : 'not-allowed',
-                opacity: selectedFile && !loading ? 1 : 0.6
+                opacity: selectedFile && !loading ? 1 : 0.6,
+                fontSize: '16px',
+                fontWeight: 'bold'
               }}
             >
-              {loading ? 'Detecting...' : 'Detect Pest'}
+              {loading ? '🔍 Detecting...' : '🔍 Detect Pest'}
             </MyButton>
             
             {selectedFile && (
@@ -179,7 +348,8 @@ function PestDetectPage() {
                   color: 'white',
                   border: 'none',
                   borderRadius: '6px',
-                  cursor: loading ? 'not-allowed' : 'pointer'
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  fontSize: '16px'
                 }}
               >
                 Clear

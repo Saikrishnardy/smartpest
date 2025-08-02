@@ -13,27 +13,89 @@ function DescriptionPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    // Simulate loading data
+    setTimeout(() => {
+      const samplePesticides = [
+        {
+          name: 'Insecticidal Soap',
+          type: 'Organic',
+          description: 'A natural pesticide made from potassium salts of fatty acids. Safe for plants and beneficial insects.',
+          usage: 'Mix 2-5 tablespoons per gallon of water. Apply to affected plants, covering both sides of leaves.',
+          safety: 'Low toxicity to humans and pets. Wash hands after use. Avoid contact with eyes.'
+        },
+        {
+          name: 'Neem Oil',
+          type: 'Organic',
+          description: 'Extracted from neem tree seeds, acts as both insecticide and fungicide.',
+          usage: 'Mix 1-2 tablespoons per gallon of water. Apply every 7-14 days as needed.',
+          safety: 'Generally safe but may cause skin irritation. Keep away from children and pets.'
+        },
+        {
+          name: 'Pyrethrin',
+          type: 'Natural',
+          description: 'Extracted from chrysanthemum flowers, effective against many insects.',
+          usage: 'Follow label instructions. Apply in evening to avoid harming beneficial insects.',
+          safety: 'Moderate toxicity. Wear protective gear and avoid breathing spray mist.'
+        },
+        {
+          name: 'Horticultural Oil',
+          type: 'Mineral',
+          description: 'Petroleum-based oil that suffocates insects and their eggs.',
+          usage: 'Apply during dormant season or when temperatures are below 90°F.',
+          safety: 'Can cause plant damage if applied in hot weather. Follow temperature guidelines.'
+        },
+        {
+          name: 'Diatomaceous Earth',
+          type: 'Natural',
+          description: 'Powdered fossilized algae that damages insect exoskeletons.',
+          usage: 'Dust lightly on affected areas. Reapply after rain or watering.',
+          safety: 'Low toxicity but avoid breathing dust. Wear mask during application.'
+        }
+      ];
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      // Fetch pesticides data
-      const pesticidesResponse = await fetch('/assets/pesticides_info.json');
-      const pesticidesData = await pesticidesResponse.json();
-      setPesticides(pesticidesData);
+      const samplePests = [
+        {
+          name: 'Aphids',
+          category: 'Sap-Sucking Insects',
+          description: 'Small, soft-bodied insects that feed on plant sap. Usually green, black, or brown.',
+          damage: 'Cause yellowing leaves, stunted growth, honeydew secretion, and sooty mold.',
+          control: 'Use insecticidal soap, neem oil, or introduce ladybugs. Remove heavily infested leaves.'
+        },
+        {
+          name: 'Spider Mites',
+          category: 'Arachnids',
+          description: 'Tiny arachnids that create fine webbing on plants. Difficult to see with naked eye.',
+          damage: 'Cause stippling on leaves, webbing, leaf drop, and plant stress.',
+          control: 'Increase humidity, use miticides, or predatory mites. Regular misting helps.'
+        },
+        {
+          name: 'Whiteflies',
+          category: 'Flying Insects',
+          description: 'Small, white, winged insects that cluster on leaf undersides.',
+          damage: 'Cause yellowing, wilting, and transmit plant viruses.',
+          control: 'Use yellow sticky traps, insecticidal soap, or systemic insecticides.'
+        },
+        {
+          name: 'Mealybugs',
+          category: 'Scale Insects',
+          description: 'Small, white, cottony insects that feed on plant sap.',
+          damage: 'Cause stunted growth, yellowing leaves, and honeydew secretion.',
+          control: 'Remove manually with alcohol-soaked cotton swab or use systemic insecticide.'
+        },
+        {
+          name: 'Scale Insects',
+          category: 'Sap-Sucking Insects',
+          description: 'Small, immobile insects that appear as bumps on stems and leaves.',
+          damage: 'Cause yellowing, wilting, and honeydew secretion.',
+          control: 'Scrape off manually or use horticultural oil during dormant season.'
+        }
+      ];
 
-      // Fetch pest descriptions
-      const pestResponse = await fetch('/assets/pest_description.json');
-      const pestData = await pestResponse.json();
-      setPestDescriptions(pestData);
-    } catch (err) {
-      setError('Failed to load data');
-    } finally {
+      setPesticides(samplePesticides);
+      setPestDescriptions(samplePests);
       setLoading(false);
-    }
-  };
+    }, 1000);
+  }, []);
 
   const filteredPesticides = pesticides.filter(pesticide =>
     pesticide.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -41,7 +103,8 @@ function DescriptionPage() {
   );
 
   const filteredPests = pestDescriptions.filter(pest =>
-    pest.name.toLowerCase().includes(searchTerm.toLowerCase())
+    pest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    pest.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
