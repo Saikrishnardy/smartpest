@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Card from '../components/Card';
 import Alert from '../components/Alert';
-import Table from '../components/Table';
+import MyButton from '../components/MyButton';
 import BackgroundContainer from '../components/BackgroundContainer';
 
 function AdminDashboard() {
-  const [user, setUser] = useState(null);
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalDetections: 0,
@@ -20,50 +19,45 @@ function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is admin
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      const userObj = JSON.parse(userData);
-      if (userObj.role !== 'admin') {
-        navigate('/');
-        return;
-      }
-      setUser(userObj);
-      fetchDashboardData();
-    } else {
-      navigate('/login');
-    }
-  }, [navigate]);
-
-  const fetchDashboardData = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/admin/dashboard/', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+    // Simulate loading admin data
+    setTimeout(() => {
+      setStats({
+        totalUsers: 156,
+        totalDetections: 342,
+        totalReports: 298,
+        totalFeedback: 45
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data.stats);
-        setRecentDetections(data.recent_detections || []);
-      } else {
-        setError('Failed to fetch dashboard data');
-      }
-    } catch (err) {
-      setError('Network error while fetching dashboard data');
-    } finally {
+      
+      setRecentDetections([
+        {
+          user_name: 'John Doe',
+          pest_name: 'Aphids',
+          confidence: 0.92,
+          created_at: '2024-01-15T10:30:00Z'
+        },
+        {
+          user_name: 'Jane Smith',
+          pest_name: 'Spider Mites',
+          confidence: 0.87,
+          created_at: '2024-01-15T09:15:00Z'
+        },
+        {
+          user_name: 'Mike Johnson',
+          pest_name: 'Whiteflies',
+          confidence: 0.89,
+          created_at: '2024-01-15T08:45:00Z'
+        },
+        {
+          user_name: 'Sarah Wilson',
+          pest_name: 'Mealybugs',
+          confidence: 0.85,
+          created_at: '2024-01-14T16:20:00Z'
+        }
+      ]);
+      
       setLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
+    }, 1000);
+  }, []);
 
   const adminFeatures = [
     {
@@ -125,7 +119,7 @@ function AdminDashboard() {
             Admin Dashboard
           </h1>
           <p style={{ margin: 0, opacity: 0.9 }}>
-            Welcome back, {user?.first_name || user?.username}! Manage your SmartPest system.
+            Welcome to the SmartPest Admin Panel. Manage your system effectively.
           </p>
         </div>
 
@@ -216,20 +210,28 @@ function AdminDashboard() {
           <h2 style={{ marginBottom: '20px', color: '#333' }}>Recent Detections</h2>
           {recentDetections.length > 0 ? (
             <Card>
-              <Table 
-                columns={[
-                  { header: 'User', accessor: 'user' },
-                  { header: 'Pest', accessor: 'pest_name' },
-                  { header: 'Confidence', accessor: 'confidence' },
-                  { header: 'Date', accessor: 'date' }
-                ]}
-                data={recentDetections.map(detection => ({
-                  user: detection.user_name,
-                  pest_name: detection.pest_name,
-                  confidence: `${(detection.confidence * 100).toFixed(1)}%`,
-                  date: new Date(detection.created_at).toLocaleDateString()
-                }))}
-              />
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ background: '#f5f5f5' }}>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>User</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Pest</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Confidence</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentDetections.map((detection, index) => (
+                      <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
+                        <td style={{ padding: '12px' }}>{detection.user_name}</td>
+                        <td style={{ padding: '12px' }}>{detection.pest_name}</td>
+                        <td style={{ padding: '12px' }}>{(detection.confidence * 100).toFixed(1)}%</td>
+                        <td style={{ padding: '12px' }}>{new Date(detection.created_at).toLocaleDateString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </Card>
           ) : (
             <Card>
@@ -323,20 +325,6 @@ function AdminDashboard() {
             }}
           >
             Back to Home
-          </button>
-          
-          <button 
-            onClick={handleLogout}
-            style={{
-              padding: '10px 20px',
-              background: '#f44336',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            Logout
           </button>
         </div>
       </div>

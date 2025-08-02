@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Card from '../components/Card';
 import Alert from '../components/Alert';
-import MyTextField from '../components/MyTextField';
 import MyButton from '../components/MyButton';
 import BackgroundContainer from '../components/BackgroundContainer';
 
@@ -35,19 +34,8 @@ function FeedbackPage() {
     setSuccess('');
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/feedback/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
+      // Simulate API call since we removed authentication
+      setTimeout(() => {
         setSuccess('Feedback submitted successfully! Thank you for your input.');
         // Clear form
         setFormData({
@@ -57,16 +45,14 @@ function FeedbackPage() {
           message: '',
           rating: 5
         });
-        // Redirect to home after 2 seconds
+        setLoading(false);
+        // Redirect to home after 3 seconds
         setTimeout(() => {
           navigate('/');
-        }, 2000);
-      } else {
-        setError(data.message || 'Failed to submit feedback');
-      }
+        }, 3000);
+      }, 1500);
     } catch (err) {
       setError('Network error. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
@@ -96,7 +82,7 @@ function FeedbackPage() {
               }}>
                 Name *
               </label>
-              <MyTextField
+              <input
                 type="text"
                 name="name"
                 value={formData.name}
@@ -123,7 +109,7 @@ function FeedbackPage() {
               }}>
                 Email *
               </label>
-              <MyTextField
+              <input
                 type="email"
                 name="email"
                 value={formData.email}
@@ -150,7 +136,7 @@ function FeedbackPage() {
               }}>
                 Subject *
               </label>
-              <MyTextField
+              <input
                 type="text"
                 name="subject"
                 value={formData.subject}

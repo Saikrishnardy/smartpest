@@ -6,25 +6,13 @@ import Alert from '../components/Alert';
 import BackgroundContainer from '../components/BackgroundContainer';
 
 function HomePage() {
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is logged in
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
     setLoading(false);
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
 
   const features = [
     {
@@ -67,28 +55,6 @@ function HomePage() {
     );
   }
 
-  if (!user) {
-    return (
-      <BackgroundContainer>
-        <div style={{ textAlign: 'center', padding: '50px' }}>
-          <h2>Please log in to continue</h2>
-          <Link to="/login">
-            <button style={{
-              padding: '10px 20px',
-              background: '#1976d2',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}>
-              Login
-            </button>
-          </Link>
-        </div>
-      </BackgroundContainer>
-    );
-  }
-
   return (
     <BackgroundContainer>
       <Navbar />
@@ -105,11 +71,32 @@ function HomePage() {
           textAlign: 'center'
         }}>
           <h1 style={{ margin: '0 0 10px 0', fontSize: '32px' }}>
-            Welcome back, {user.first_name || user.username}!
+            Welcome to SmartPest!
           </h1>
           <p style={{ margin: 0, opacity: 0.9 }}>
             SmartPest helps you identify and manage pests effectively
           </p>
+          
+          {/* Test Navigation Button */}
+          <div style={{ marginTop: '20px' }}>
+            <button
+              onClick={() => {
+                console.log('Test button clicked - navigating to pest-detect');
+                navigate('/pest-detect');
+              }}
+              style={{
+                padding: '10px 20px',
+                background: 'rgba(255,255,255,0.2)',
+                color: 'white',
+                border: '2px solid white',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '16px'
+              }}
+            >
+              🧪 Test Navigation to Pest Detection
+            </button>
+          </div>
         </div>
 
         {/* Quick Stats */}
@@ -147,7 +134,16 @@ function HomePage() {
               border: `2px solid ${feature.color}`,
               background: 'white'
             }}
-            onClick={() => navigate(feature.link)}>
+            onClick={() => {
+              console.log('Card clicked:', feature.title, 'navigating to:', feature.link);
+              console.log('Current URL before navigation:', window.location.pathname);
+              try {
+                navigate(feature.link);
+                console.log('Navigation called successfully');
+              } catch (error) {
+                console.error('Navigation error:', error);
+              }
+            }}>
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -191,7 +187,7 @@ function HomePage() {
           </Card>
         </div>
 
-        {/* User Actions */}
+        {/* Admin Access */}
         <div style={{ 
           marginTop: '30px', 
           padding: '20px', 
@@ -199,34 +195,18 @@ function HomePage() {
           borderRadius: '8px',
           textAlign: 'center'
         }}>
-          <button 
-            onClick={handleLogout}
-            style={{
+          <Link to="/admin">
+            <button style={{
               padding: '10px 20px',
-              background: '#f44336',
+              background: '#ff9800',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
-              cursor: 'pointer',
-              marginRight: '10px'
-            }}
-          >
-            Logout
-          </button>
-          {user.role === 'admin' && (
-            <Link to="/admin">
-              <button style={{
-                padding: '10px 20px',
-                background: '#ff9800',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}>
-                Admin Dashboard
-              </button>
-            </Link>
-          )}
+              cursor: 'pointer'
+            }}>
+              Admin Dashboard
+            </button>
+          </Link>
         </div>
       </div>
     </BackgroundContainer>
