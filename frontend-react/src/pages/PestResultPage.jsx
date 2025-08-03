@@ -5,6 +5,7 @@ import Card from '../components/Card';
 import Alert from '../components/Alert';
 import MyButton from '../components/MyButton';
 import BackgroundContainer from '../components/BackgroundContainer';
+import ApiService from '../services/api';
 
 function PestResultPage() {
   const location = useLocation();
@@ -67,13 +68,20 @@ function PestResultPage() {
 
     setLoading(true);
     try {
-      // Simulate saving report since we removed authentication
-      setTimeout(() => {
-        alert('Report saved successfully!');
-        setLoading(false);
-      }, 1000);
+      const reportData = {
+        pest_name: detectionResult.pest_name,
+        confidence: detectionResult.confidence,
+        description: detectionResult.description,
+        timestamp: new Date().toISOString(),
+        user_id: 'anonymous' // Since we removed authentication
+      };
+
+      await ApiService.saveReport(reportData);
+      alert('Report saved successfully!');
+      setLoading(false);
     } catch (err) {
-      setError('Failed to save report');
+      console.error('Error saving report:', err);
+      setError('Failed to save report. Please try again.');
       setLoading(false);
     }
   };
