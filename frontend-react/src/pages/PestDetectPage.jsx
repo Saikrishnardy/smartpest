@@ -5,6 +5,7 @@ import Card from '../components/Card';
 import Alert from '../components/Alert';
 import MyButton from '../components/MyButton';
 import BackgroundContainer from '../components/BackgroundContainer';
+import ApiService from '../services/api';
 
 function PestDetectPage() {
   console.log('PestDetectPage component loaded');
@@ -84,60 +85,40 @@ function PestDetectPage() {
     setSuccess('');
 
     try {
-      const formData = new FormData();
-      formData.append('image', selectedFile);
-
-      console.log('Starting detection simulation...');
-      // For now, simulate the API call since we removed authentication
-      // In a real app, you would make the actual API call here
-      setTimeout(() => {
-        console.log('Detection complete, navigating to results...');
-        setSuccess('Pest detected successfully!');
-        
-        // Generate realistic detection results
-        const pestTypes = [
-          {
-            pest_name: 'Aphids',
-            confidence: 0.92,
-            description: 'Small, soft-bodied insects that feed on plant sap',
-            recommendations: ['Use insecticidal soap', 'Introduce ladybugs', 'Apply neem oil']
-          },
-          {
-            pest_name: 'Spider Mites',
-            confidence: 0.87,
-            description: 'Tiny arachnids that create fine webbing on plants',
-            recommendations: ['Increase humidity', 'Use miticides', 'Apply horticultural oil']
-          },
-          {
-            pest_name: 'Whiteflies',
-            confidence: 0.89,
-            description: 'Small, white, winged insects that cluster on leaf undersides',
-            recommendations: ['Use yellow sticky traps', 'Apply insecticidal soap', 'Systemic treatment']
-          },
-          {
-            pest_name: 'Mealybugs',
-            confidence: 0.85,
-            description: 'Small, white, cottony insects that feed on plant sap',
-            recommendations: ['Remove manually', 'Apply alcohol solution', 'Use systemic insecticide']
-          }
-        ];
-        
-        // Randomly select a pest type for demonstration
-        const randomPest = pestTypes[Math.floor(Math.random() * pestTypes.length)];
-        
-        // Navigate to results page with detection data
-        navigate('/pest-result', { 
-          state: { 
-            detectionResult: randomPest,
-            imageFile: selectedFile
-          } 
-        });
+      console.log('Starting pest detection...');
+      
+      // Call the actual API
+      const result = await ApiService.detectPest(selectedFile);
+      console.log('API Response:', result);
+      
+      if (result.error) {
+        setError(result.error);
         setLoading(false);
-      }, 2000);
+        return;
+      }
+
+      // Transform the API response to match our expected format
+      const detectionResult = {
+        pest_name: result.class,
+        confidence: result.confidence,
+        description: `Detected ${result.class} with ${(result.confidence * 100).toFixed(1)}% confidence`,
+        recommendations: ['Use appropriate pesticides', 'Apply preventive measures', 'Monitor regularly']
+      };
+
+      setSuccess('Pest detected successfully!');
+      
+      // Navigate to results page with detection data
+      navigate('/pest-result', { 
+        state: { 
+          detectionResult: detectionResult,
+          imageFile: selectedFile
+        } 
+      });
+      setLoading(false);
 
     } catch (err) {
       console.error('Error during detection:', err);
-      setError('Network error. Please try again.');
+      setError('Failed to connect to the detection service. Please check if the backend server is running.');
       setLoading(false);
     }
   };
