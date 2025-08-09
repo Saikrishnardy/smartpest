@@ -40,10 +40,10 @@ def load_model():
         if os.path.exists(model_path):
             try:
                 # Check if it's a Git LFS pointer
-                with open(model_path, 'r') as f:
-                    first_line = f.readline().strip()
-                    if first_line.startswith('version https://git-lfs.github.com/spec/v1'):
-                        print("⚠️  Model file is a Git LFS pointer. Trying pre-trained model...")
+                with open(model_path, 'rb') as f:
+                    first_line = f.readline()
+                    if first_line.startswith(b'version https://git-lfs.github.com/spec/v1'):
+                        print("\u26a0\ufe0f  Model file is a Git LFS pointer. Trying pre-trained model...")
                         raise Exception("Git LFS pointer")
                 # Try to load the actual model
                 model.load_state_dict(torch.load(model_path, map_location=device))
