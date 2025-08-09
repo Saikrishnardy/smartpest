@@ -36,84 +36,33 @@ class PestDetectionView(APIView):
 @api_view(['GET'])
 def pest_info(request, pest_name):
     """Get detailed information about a specific pest"""
-    # This would typically come from a database
-    pest_database = {
-        'Aphids': {
-            'description': 'Small, soft-bodied insects that feed on plant sap',
-            'damage': 'Cause yellowing leaves, stunted growth, and honeydew secretion',
-            'control_methods': 'Use insecticidal soap, neem oil, or introduce ladybugs',
-            'pesticides': ['Insecticidal Soap', 'Neem Oil', 'Pyrethrin']
-        },
-        'Spider Mites': {
-            'description': 'Tiny arachnids that create fine webbing on plants',
-            'damage': 'Cause stippling on leaves, webbing, and leaf drop',
-            'control_methods': 'Increase humidity, use miticides, or predatory mites',
-            'pesticides': ['Miticide', 'Horticultural Oil', 'Insecticidal Soap']
-        },
-        'Whiteflies': {
-            'description': 'Small, white, winged insects that cluster on leaf undersides',
-            'damage': 'Cause yellowing, wilting, and transmit plant viruses',
-            'control_methods': 'Use yellow sticky traps, insecticidal soap, or systemic insecticides',
-            'pesticides': ['Insecticidal Soap', 'Neem Oil', 'Systemic Insecticide']
-        },
-        'Mealybugs': {
-            'description': 'Small, white, cottony insects that feed on plant sap',
-            'damage': 'Cause stunted growth, yellowing leaves, and honeydew secretion',
-            'control_methods': 'Remove manually, apply alcohol solution, or use systemic insecticide',
-            'pesticides': ['Systemic Insecticide', 'Horticultural Oil', 'Neem Oil']
-        },
-        'Scale Insects': {
-            'description': 'Small, immobile insects that attach to plant surfaces',
-            'damage': 'Cause yellowing leaves, stunted growth, and plant decline',
-            'control_methods': 'Scrape off manually, use horticultural oil, or systemic treatment',
-            'pesticides': ['Horticultural Oil', 'Systemic Insecticide', 'Neem Oil']
-        },
-        'Thrips': {
-            'description': 'Tiny, slender insects that feed on plant tissues',
-            'damage': 'Cause silvering of leaves, distorted growth, and flower damage',
-            'control_methods': 'Use blue sticky traps, insecticidal soap, or predatory mites',
-            'pesticides': ['Insecticidal Soap', 'Neem Oil', 'Spinosad']
-        },
-        'Leaf Miners': {
-            'description': 'Larvae that tunnel inside leaves creating visible trails',
-            'damage': 'Create winding trails in leaves, reducing photosynthesis',
-            'control_methods': 'Remove affected leaves, use systemic insecticides, or beneficial nematodes',
-            'pesticides': ['Systemic Insecticide', 'Spinosad', 'Neem Oil']
-        },
-        'Caterpillars': {
-            'description': 'Larvae of moths and butterflies that feed on plant foliage',
-            'damage': 'Create holes in leaves, defoliate plants, and bore into fruits',
-            'control_methods': 'Handpick, use Bacillus thuringiensis, or introduce parasitic wasps',
-            'pesticides': ['Bacillus thuringiensis', 'Spinosad', 'Neem Oil']
-        },
-        'Termite': {
-            'description': 'Social insects that feed on wood and plant materials',
-            'damage': 'Destroy wooden structures, damage plant roots and stems',
-            'control_methods': 'Use soil treatments, bait systems, or professional pest control',
-            'pesticides': ['Termite Bait', 'Soil Treatment', 'Professional Treatment']
-        },
-        'Grasshopper': {
-            'description': 'Large jumping insects that feed on plant foliage',
-            'damage': 'Defoliate plants, create large holes in leaves',
-            'control_methods': 'Use barriers, introduce predators, or apply insecticides',
-            'pesticides': ['Carbaryl', 'Malathion', 'Neem Oil']
-        },
-        'Whitefly': {
-            'description': 'Small, white, winged insects that cluster on leaf undersides',
-            'damage': 'Cause yellowing, wilting, and transmit plant viruses',
-            'control_methods': 'Use yellow sticky traps, insecticidal soap, or systemic insecticides',
-            'pesticides': ['Insecticidal Soap', 'Neem Oil', 'Systemic Insecticide']
-        }
-    }
-    
-    pest_info = pest_database.get(pest_name, {
-        'description': 'Pest information not available in database',
-        'damage': 'Damage assessment requires further analysis',
-        'control_methods': 'General pest control methods recommended',
-        'pesticides': ['Consult local pest control expert']
+    # Paths to the JSON files
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    desc_path = os.path.join(base_dir, 'pest_description.json')
+    pest_path = os.path.join(base_dir, 'pesticides_info.json')
+
+    # Load descriptions
+    with open(desc_path, 'r', encoding='utf-8') as f:
+        desc_data = json.load(f)
+    desc_dict = {item['pest_name']: item['description'] for item in desc_data}
+
+    # Load pesticides
+    with open(pest_path, 'r', encoding='utf-8') as f:
+        pest_data = json.load(f)
+    pest_dict = {item['pest_name']: item['pesticides'] for item in pest_data}
+
+    # Try to find the pest
+    description = desc_dict.get(pest_name, 'No detailed description available.')
+    pesticides = pest_dict.get(pest_name, [])
+
+    if not pesticides:
+        pesticides = [{'name': 'No pesticide data available', 'dosage': '', 'safety_precautions': ''}]
+
+    return JsonResponse({
+        'pest_name': pest_name,
+        'description': description,
+        'pesticides': pesticides
     })
-    
-    return JsonResponse(pest_info)
 
 @api_view(['POST'])
 def save_report(request):
