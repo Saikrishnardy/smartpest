@@ -4,6 +4,7 @@ import MyTextField from '../components/MyTextField';
 import MyButton from '../components/MyButton';
 import Alert from '../components/Alert';
 import BackgroundContainer from '../components/BackgroundContainer';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 function LoginPage() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth(); // Get login function from AuthContext
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -42,16 +44,9 @@ function LoginPage() {
 
       if (response.ok) {
         setSuccess('Login successful!');
-        // Store token in localStorage
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-        // Redirect based on user role
-        if (data.user.role === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/');
-        }
+        // Instead of directly setting localStorage, use the login function from AuthContext
+        login(data.user, data.token);
+        // The navigate call is handled by the AuthContext login function now
       } else {
         setError(data.message || 'Login failed');
       }

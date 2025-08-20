@@ -88,24 +88,51 @@ function PestDetectPage() {
       console.log('Starting pest detection...');
       
       // Call the actual API
-      const result = await ApiService.detectPest(selectedFile);
-      console.log('API Response:', result);
-      
-      if (result.error) {
-        setError(result.error);
+      const predictionResult = await ApiService.detectPest(selectedFile);
+      console.log('API Prediction Response:', predictionResult);
+
+      if (predictionResult.error) {
+        setError(predictionResult.error);
         setLoading(false);
         return;
       }
 
-      // Transform the API response to match our expected format
+      // Fetch detailed pest information
+      console.log('Fetching detailed pest info for:', predictionResult.class);
+      const pestInfo = await ApiService.getPestInfo(predictionResult.class);
+      console.log('API Pest Info Response:', pestInfo);
+
+      if (pestInfo.error) {
+        // Handle case where pest info isn't found or has an error
+        console.warn(`Could not find detailed info for ${predictionResult.class}. Using basic info.`);
+        const detectionResult = {
+          pest_name: predictionResult.class,
+          confidence: predictionResult.confidence,
+          description: `Detected ${predictionResult.class} with ${(predictionResult.confidence * 100).toFixed(1)}% confidence. No detailed description available.`,
+          pesticides: [{ name: 'No specific pesticide recommendations available.', dosage: '', safety_precautions: '' }],
+          // Add other default or empty fields if expected by PestResultPage
+        };
+        setSuccess('Pest detected, but detailed info is limited.');
+        navigate('/pest-result', { 
+          state: { 
+            detectionResult: detectionResult,
+            imageFile: selectedFile
+          } 
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Combine prediction and detailed info
       const detectionResult = {
-        pest_name: result.class,
-        confidence: result.confidence,
-        description: `Detected ${result.class} with ${(result.confidence * 100).toFixed(1)}% confidence`,
-        recommendations: ['Use appropriate pesticides', 'Apply preventive measures', 'Monitor regularly']
+        pest_name: predictionResult.class,
+        confidence: predictionResult.confidence,
+        description: pestInfo.description,
+        pesticides: pestInfo.pesticides,
+        // Add other fields from pestInfo if available and needed
       };
 
-      setSuccess('Pest detected successfully!');
+      setSuccess('Pest detected successfully with full details!');
       
       // Navigate to results page with detection data
       navigate('/pest-result', { 
@@ -197,35 +224,6 @@ function PestDetectPage() {
         <Card style={{ marginBottom: '20px' }}>
           <h3 style={{ marginBottom: '20px', color: '#333' }}>Upload Image</h3>
           
-          {/* Test Navigation Button */}
-          <div style={{ marginBottom: '20px', textAlign: 'center' }}>
-            <button
-              onClick={() => {
-                console.log('Test navigation button clicked');
-                navigate('/pest-result', { 
-                  state: { 
-                    detectionResult: {
-                      pest_name: 'Test Pest',
-                      confidence: 0.95,
-                      description: 'This is a test pest detection result',
-                      recommendations: ['Test recommendation 1', 'Test recommendation 2']
-                    }
-                  } 
-                });
-              }}
-              style={{
-                padding: '10px 20px',
-                background: '#ff9800',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                marginBottom: '10px'
-              }}
-            >
-              🧪 Test Navigation (Skip Upload)
-            </button>
-          </div>
           
           <div 
             style={{ 

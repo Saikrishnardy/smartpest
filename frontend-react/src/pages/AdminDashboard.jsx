@@ -5,13 +5,14 @@ import Card from '../components/Card';
 import Alert from '../components/Alert';
 import MyButton from '../components/MyButton';
 import BackgroundContainer from '../components/BackgroundContainer';
+import ApiService from '../services/api'; // Import ApiService
 
 function AdminDashboard() {
   const [stats, setStats] = useState({
-    totalUsers: 0,
-    totalDetections: 0,
+    totalUsers: 0, // Placeholder, needs backend API
+    totalDetections: 0, // Placeholder, needs backend API, or count all reports
     totalReports: 0,
-    totalFeedback: 0
+    totalFeedback: 0 // Placeholder, needs backend API
   });
   const [recentDetections, setRecentDetections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,44 +20,40 @@ function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate loading admin data
-    setTimeout(() => {
-      setStats({
-        totalUsers: 156,
-        totalDetections: 342,
-        totalReports: 298,
-        totalFeedback: 45
-      });
-      
-      setRecentDetections([
-        {
-          user_name: 'John Doe',
-          pest_name: 'Aphids',
-          confidence: 0.92,
-          created_at: '2024-01-15T10:30:00Z'
-        },
-        {
-          user_name: 'Jane Smith',
-          pest_name: 'Spider Mites',
-          confidence: 0.87,
-          created_at: '2024-01-15T09:15:00Z'
-        },
-        {
-          user_name: 'Mike Johnson',
-          pest_name: 'Whiteflies',
-          confidence: 0.89,
-          created_at: '2024-01-15T08:45:00Z'
-        },
-        {
-          user_name: 'Sarah Wilson',
-          pest_name: 'Mealybugs',
-          confidence: 0.85,
-          created_at: '2024-01-14T16:20:00Z'
-        }
-      ]);
-      
-      setLoading(false);
-    }, 1000);
+    const fetchAdminData = async () => {
+      setLoading(true);
+      try {
+        const reports = await ApiService.getReports();
+        
+        // Calculate total reports
+        const totalReportsCount = reports.length;
+
+        // Get recent detections (e.g., last 5)
+        // Assuming reports are already ordered by timestamp descending from backend
+        const recent = reports.slice(0, 5).map(report => ({
+          user_name: report.user_id, // Use user_id for now
+          pest_name: report.pest_name,
+          confidence: report.confidence,
+          created_at: report.timestamp
+        }));
+
+        setStats(prevStats => ({
+          ...prevStats,
+          totalReports: totalReportsCount,
+          // totalDetections can be considered totalReports for now if no separate detection logging
+          totalDetections: totalReportsCount 
+        }));
+        setRecentDetections(recent);
+        
+      } catch (err) {
+        console.error('Error fetching admin data:', err);
+        setError('Failed to load admin data. Please check backend connection.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAdminData();
   }, []);
 
   const adminFeatures = [

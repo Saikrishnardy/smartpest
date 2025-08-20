@@ -21,7 +21,7 @@ def load_model():
         # Load class names
         class_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "classes.txt")
         with open(class_file, "r") as f:
-            class_names = [line.strip() for line in f.readlines()]
+            class_names = [line.strip() for line in f.readlines() if line.strip()]
         print(f"Loaded {len(class_names)} pest classes")
         # Create model
         model = timm.create_model("efficientnet_b5", pretrained=False, num_classes=len(class_names))
