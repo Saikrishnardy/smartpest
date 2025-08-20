@@ -3,7 +3,13 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
+from rest_framework import status # Import status
+from rest_framework.authtoken.models import Token # Import Token
+from django.contrib.auth import authenticate # Import authenticate
+
 from .inference import predict_image
+from .models import Report, User  # Import the User model
+from .serializers import ReportSerializer, UserSerializer # Import UserSerializer
 import tempfile
 import json
 import os
@@ -69,12 +75,62 @@ def save_report(request):
     """Save a pest detection report"""
     try:
         data = json.loads(request.body)
-        # In a real application, you would save this to a database
-        # For now, we'll just return a success response
-        print(f"Saving report: {data}")
-        return JsonResponse({
-            "message": "Report saved successfully",
-            "report_id": "demo_" + str(hash(str(data)))
-        })
+        serializer = ReportSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({
+                "message": "Report saved successfully",
+                "report_id": serializer.data['id']  # Return the ID from the saved object
+            }, status=201) # 201 Created
+        else:
+            return JsonResponse(serializer.errors, status=400)
     except Exception as e:
-        return JsonResponse({"error": f"Failed to save report: {str(e)}"}, status=400)
+        return JsonResponse({"error": f"Failed to save report: {str(e)}"}, status=500)
+
+
+class ReportListView(APIView):
+    """List all pest detection reports"""
+    def get(self, request, format=None):
+        reports = Report.objects.all().order_by('-timestamp') # Order by most recent
+        serializer = ReportSerializer(reports, many=True)
+        return Response(serializer.data)
+
+
+@api_view(['POST'])
+def register_user(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        # Set username to email if it's not provided or required by AbstractUser
+        if not user.username:
+            user.username = user.email
+            user.save()
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'user': serializer.data,
+            'token': token.key
+        }, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def login_user(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    if not email or not password:
+        return Response({"detail": "Email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Use authenticate with the email as username for custom user model
+    user = authenticate(request, username=email, password=password)
+
+    if user is not None:
+        token, created = Token.objects.get_or_create(user=user)
+        # Using UserSerializer to get user data consistent with registration
+        serializer = UserSerializer(user)
+        return Response({
+            'user': serializer.data,
+            'token': token.key
+        })
+    else:
+        return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)

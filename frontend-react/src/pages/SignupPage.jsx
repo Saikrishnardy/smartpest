@@ -55,7 +55,7 @@ function SignupPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/signup/', {
+      const response = await fetch('http://localhost:8000/api/register/', { // Corrected endpoint from /api/signup/ to /api/register/
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +87,9 @@ function SignupPage() {
           navigate('/login');
         }, 2000);
       } else {
-        setError(data.message || 'Signup failed');
+        // Log the full error response from the backend
+        console.error('Signup failed with response:', data);
+        setError(data.message || data.detail || (data.email && data.email[0]) || (data.password && data.password[0]) || 'Signup failed. Please check your input and try again.');
       }
     } catch (err) {
       setError('Network error. Please try again.');
