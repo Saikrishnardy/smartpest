@@ -5,7 +5,7 @@ import Card from '../components/Card';
 import Alert from '../components/Alert';
 import MyButton from '../components/MyButton';
 import BackgroundContainer from '../components/BackgroundContainer';
-import ApiService from '../services/api';
+import ApiService from '../services/api'; // Moved this import to the top
 
 function PestResultPage() {
   const location = useLocation();
@@ -26,42 +26,7 @@ function PestResultPage() {
     }
   }, [location, navigate]);
 
-  // Sample pest data for demonstration
-  const getPestInfo = (pestName) => {
-    const pestDatabase = {
-      'Aphids': {
-        description: 'Small, soft-bodied insects that feed on plant sap',
-        damage: 'Cause yellowing leaves, stunted growth, and honeydew secretion',
-        control_methods: 'Use insecticidal soap, neem oil, or introduce ladybugs',
-        pesticides: ['Insecticidal Soap', 'Neem Oil', 'Pyrethrin']
-      },
-      'Spider Mites': {
-        description: 'Tiny arachnids that create fine webbing on plants',
-        damage: 'Cause stippling on leaves, webbing, and leaf drop',
-        control_methods: 'Increase humidity, use miticides, or predatory mites',
-        pesticides: ['Miticide', 'Horticultural Oil', 'Insecticidal Soap']
-      },
-      'Whiteflies': {
-        description: 'Small, white, winged insects that cluster on leaf undersides',
-        damage: 'Cause yellowing, wilting, and transmit plant viruses',
-        control_methods: 'Use yellow sticky traps, insecticidal soap, or systemic insecticides',
-        pesticides: ['Insecticidal Soap', 'Neem Oil', 'Systemic Insecticide']
-      },
-      'Sample Pest': {
-        description: 'This is a sample pest detection for demonstration purposes',
-        damage: 'Sample damage description for testing the application',
-        control_methods: 'Sample control methods for demonstration',
-        pesticides: ['Sample Pesticide 1', 'Sample Pesticide 2', 'Organic Option']
-      }
-    };
-    
-    return pestDatabase[pestName] || {
-      description: 'Pest information not available in database',
-      damage: 'Damage assessment requires further analysis',
-      control_methods: 'General pest control methods recommended',
-      pesticides: ['Consult local pest control expert']
-    };
-  };
+  // Removed the local getPestInfo function and pestDatabase
 
   const handleSaveReport = async () => {
     if (!detectionResult) return;
@@ -71,14 +36,16 @@ function PestResultPage() {
       const reportData = {
         pest_name: detectionResult.pest_name,
         confidence: detectionResult.confidence,
-        description: detectionResult.description,
+        description: detectionResult.description, // Use the description from detectionResult
         timestamp: new Date().toISOString(),
         user_id: 'anonymous' // Since we removed authentication
       };
 
+      // Removed the internal import statement here
       await ApiService.saveReport(reportData);
       alert('Report saved successfully!');
       setLoading(false);
+      navigate('/pest-reports'); // Navigate to the reports page after saving
     } catch (err) {
       console.error('Error saving report:', err);
       setError('Failed to save report. Please try again.');
@@ -186,42 +153,32 @@ function PestResultPage() {
           <Card>
             <h3 style={{ marginBottom: '20px', color: '#333' }}>Pest Information</h3>
             
-            {(() => {
-              const pestInfo = getPestInfo(detectionResult.pest_name);
-              return (
-                <div>
-                  <div style={{ marginBottom: '20px' }}>
-                    <h4 style={{ marginBottom: '10px', color: '#333' }}>Description:</h4>
-                    <p style={{ color: '#666', lineHeight: '1.6', margin: 0 }}>
-                      {pestInfo.description}
-                    </p>
-                  </div>
+            <div>
+              <div style={{ marginBottom: '20px' }}>
+                <h4 style={{ marginBottom: '10px', color: '#333' }}>Description:</h4>
+                <p style={{ color: '#666', lineHeight: '1.6', margin: 0 }}>
+                  {detectionResult.description}
+                </p>
+              </div>
 
-                  <div style={{ marginBottom: '20px' }}>
-                    <h4 style={{ marginBottom: '10px', color: '#333' }}>Damage:</h4>
-                    <p style={{ color: '#666', lineHeight: '1.6', margin: 0 }}>
-                      {pestInfo.damage}
-                    </p>
-                  </div>
+              {/* Damage and Control Methods are not directly from backend currently but can be added if your JSON has it */}
+              {/* For now, just show Pesticides directly from backend response */}
 
-                  <div style={{ marginBottom: '20px' }}>
-                    <h4 style={{ marginBottom: '10px', color: '#333' }}>Control Methods:</h4>
-                    <p style={{ color: '#666', lineHeight: '1.6', margin: 0 }}>
-                      {pestInfo.control_methods}
-                    </p>
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <h4 style={{ marginBottom: '10px', color: '#333' }}>Recommended Pesticides:</h4>
-                    <ul style={{ color: '#666', lineHeight: '1.6', margin: 0, paddingLeft: '20px' }}>
-                      {pestInfo.pesticides.map((pesticide, index) => (
-                        <li key={index}>{pesticide}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              );
-            })()}
+              <div style={{ marginBottom: '20px' }}>
+                <h4 style={{ marginBottom: '10px', color: '#333' }}>Recommended Pesticides:</h4>
+                <ul style={{ color: '#666', lineHeight: '1.6', margin: 0, paddingLeft: '20px' }}>
+                  {detectionResult.pesticides && detectionResult.pesticides.length > 0 ? (
+                    detectionResult.pesticides.map((pesticide, index) => (
+                      <li key={index}>
+                        <strong>{pesticide.name}</strong>: {pesticide.dosage} ({pesticide.safety_precautions})
+                      </li>
+                    ))
+                  ) : (
+                    <li>No specific pesticide recommendations available.</li>
+                  )}
+                </ul>
+              </div>
+            </div>
           </Card>
         </div>
 

@@ -39,6 +39,22 @@ class ApiService {
     }
   }
 
+  static async getReports() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/reports/`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('API Error fetching reports:', error);
+      throw error;
+    }
+  }
+
   static async saveReport(reportData) {
     try {
       const response = await fetch(`${API_BASE_URL}/save-report/`, {

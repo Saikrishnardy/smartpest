@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Card from '../components/Card';
 import Alert from '../components/Alert';
 import BackgroundContainer from '../components/BackgroundContainer';
+import ApiService from '../services/api'; // Import ApiService
 
 function PestReportsPage() {
   const [reports, setReports] = useState([]);
@@ -14,50 +15,27 @@ function PestReportsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate loading sample data
-    setTimeout(() => {
-      const sampleReports = [
-        {
-          id: 1,
-          date: '2024-01-15',
-          pest_name: 'Aphids',
-          confidence: 0.92,
-          user_name: 'User 1',
-          image_url: '/sample1.jpg'
-        },
-        {
-          id: 2,
-          date: '2024-01-14',
-          pest_name: 'Spider Mites',
-          confidence: 0.87,
-          user_name: 'User 2',
-          image_url: '/sample2.jpg'
-        },
-        {
-          id: 3,
-          date: '2024-01-13',
-          pest_name: 'Whiteflies',
-          confidence: 0.89,
-          user_name: 'User 1',
-          image_url: '/sample3.jpg'
-        },
-        {
-          id: 4,
-          date: '2024-01-12',
-          pest_name: 'Mealybugs',
-          confidence: 0.85,
-          user_name: 'User 3',
-          image_url: '/sample4.jpg'
-        }
-      ];
-      setReports(sampleReports);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    const fetchReports = async () => {
+      setLoading(true);
+      try {
+        const fetchedReports = await ApiService.getReports();
+        // Assuming fetchedReports items have id, date (timestamp), pest_name, confidence, user_id
+        // Map backend data to frontend expected structure (if needed, currently backend returns compatible structure)
+        setReports(fetchedReports);
+      } catch (err) {
+        console.error('Error fetching reports:', err);
+        setError('Failed to load reports. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []); // Empty dependency array means this runs once on mount
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // In a real app, this would filter the reports
+    // In a real app, this would filter the reports on frontend or send a search query to backend
     console.log('Searching for:', searchTerm);
   };
 
@@ -68,17 +46,25 @@ function PestReportsPage() {
 
   const handleViewReport = (reportId) => {
     console.log('Viewing report:', reportId);
-    // Navigate to a sample result
-    navigate('/pest-result', {
-      state: {
-        detectionResult: {
-          pest_name: reports.find(r => r.id === reportId)?.pest_name || 'Sample Pest',
-          confidence: reports.find(r => r.id === reportId)?.confidence || 0.85,
-          description: 'Sample pest detection result from reports',
-          recommendations: ['Use organic pesticides', 'Remove affected plants']
+    // In a real app, you might fetch detailed report data or navigate to a dedicated report detail page
+    // For now, navigate to pest-result with sample data or fetch actual data if available
+    const reportToView = reports.find(r => r.id === reportId);
+    if (reportToView) {
+      // This assumes your Report model in Django has description and pesticides fields
+      // which is what the PestResultPage now expects.
+      navigate('/pest-result', {
+        state: {
+          detectionResult: {
+            pest_name: reportToView.pest_name,
+            confidence: reportToView.confidence,
+            description: reportToView.description, 
+            pesticides: reportToView.pesticides || [] // Ensure pesticides is an array
+          }
         }
-      }
-    });
+      });
+    } else {
+      setError('Report not found!');
+    }
   };
 
   const handleDeleteReport = async (reportId) => {
@@ -86,9 +72,11 @@ function PestReportsPage() {
       return;
     }
 
-    // Simulate deletion
+    // TODO: Implement actual backend API call for deleting reports
+    // For now, simulate deletion on frontend
     setReports(reports.filter(report => report.id !== reportId));
     console.log('Deleted report:', reportId);
+    // If backend delete is implemented, re-fetch reports after successful deletion
   };
 
   const filterOptions = [
@@ -99,7 +87,8 @@ function PestReportsPage() {
   ];
 
   const filteredReports = reports.filter(report => {
-    if (searchTerm && !report.pest_name.toLowerCase().includes(searchTerm.toLowerCase())) {
+    // Ensure report.pest_name exists before calling toLowerCase
+    if (searchTerm && (!report.pest_name || !report.pest_name.toLowerCase().includes(searchTerm.toLowerCase()))) {
       return false;
     }
     if (filter === 'high_confidence' && report.confidence < 0.8) {
@@ -107,6 +96,13 @@ function PestReportsPage() {
     }
     if (filter === 'low_confidence' && report.confidence >= 0.8) {
       return false;
+    }
+    // Filter by recent (last 7 days) if needed, based on report.timestamp or report.date
+    // For now, assuming report.timestamp is available for recent filtering
+    if (filter === 'recent') {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      return new Date(report.timestamp) >= sevenDaysAgo; // Use timestamp for filtering
     }
     return true;
   });
@@ -247,10 +243,10 @@ function PestReportsPage() {
                   <tbody>
                     {filteredReports.map(report => (
                       <tr key={report.id} style={{ borderBottom: '1px solid #eee' }}>
-                        <td style={{ padding: '12px' }}>{new Date(report.date).toLocaleDateString()}</td>
+                        <td style={{ padding: '12px' }}>{new Date(report.timestamp).toLocaleDateString()}</td>
                         <td style={{ padding: '12px' }}>{report.pest_name}</td>
                         <td style={{ padding: '12px' }}>{(report.confidence * 100).toFixed(1)}%</td>
-                        <td style={{ padding: '12px' }}>{report.user_name}</td>
+                        <td style={{ padding: '12px' }}>{report.user_id}</td>
                         <td style={{ padding: '12px' }}>
                           <div style={{ display: 'flex', gap: '5px' }}>
                             <button
