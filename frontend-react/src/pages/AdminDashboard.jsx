@@ -9,27 +9,70 @@ import ApiService from '../services/api'; // Import ApiService
 
 function AdminDashboard() {
   const [stats, setStats] = useState({
-    totalUsers: 0, // Placeholder, needs backend API
+    totalUsers: 0,
     totalDetections: 0, // Placeholder, needs backend API, or count all reports
     totalReports: 0,
-    totalFeedback: 0 // Placeholder, needs backend API
+    totalFeedback: 0, // Placeholder, needs backend API
+    totalPesticides: 0, // New stat
+    totalPests: 0 // New stat for total pests
   });
   const [recentDetections, setRecentDetections] = useState([]);
+  const [allUsers, setAllUsers] = useState([]); // New state for all users
+  const [allFeedback, setAllFeedback] = useState([]); // New state for all feedback
+  const [allPesticides, setAllPesticides] = useState([]); // New state for all pesticides
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const adminFeatures = [
+    {
+      title: 'User Management',
+      description: `Manage ${stats.totalUsers} user accounts and permissions`,
+      icon: '👥',
+      link: '/user-management',
+      color: '#2196f3'
+    },
+    {
+      title: 'Manage Feedback',
+      description: `View and respond to ${stats.totalFeedback} user feedback`,
+      icon: '💬',
+      link: '/manage-feedback',
+      color: '#ff9800'
+    },
+    {
+      title: 'Manage Pests and Pesticides', // Renamed title
+      description: `Add, update, and manage ${stats.totalPests} pest and ${stats.totalPesticides} pesticide information`,
+      icon: '🧪',
+      link: '/manage-pesticides',
+      color: '#4caf50'
+    },
+    {
+      title: 'Pest Reports',
+      description: `View all ${stats.totalReports} pest detection reports`,
+      icon: '📊',
+      link: '/pest-reports',
+      color: '#9c27b0'
+    }
+  ];
 
   useEffect(() => {
     const fetchAdminData = async () => {
       setLoading(true);
       try {
         const reports = await ApiService.getReports();
+        const users = await ApiService.getUsers();
+        const feedback = await ApiService.getFeedback();
+        const pesticides = await ApiService.getPesticides();
+        const pests = await ApiService.getPests(); // Fetch pests
         
-        // Calculate total reports
+        // Calculate total counts
         const totalReportsCount = reports.length;
+        const totalUsersCount = users.length;
+        const totalFeedbackCount = feedback.length;
+        const totalPesticidesCount = pesticides.length;
+        const totalPestsCount = pests.length; // Calculate total pests
 
         // Get recent detections (e.g., last 5)
-        // Assuming reports are already ordered by timestamp descending from backend
         const recent = reports.slice(0, 5).map(report => ({
           user_name: report.user_id, // Use user_id for now
           pest_name: report.pest_name,
@@ -37,13 +80,18 @@ function AdminDashboard() {
           created_at: report.timestamp
         }));
 
-        setStats(prevStats => ({
-          ...prevStats,
+        setStats({
+          totalUsers: totalUsersCount,
+          totalDetections: totalReportsCount, 
           totalReports: totalReportsCount,
-          // totalDetections can be considered totalReports for now if no separate detection logging
-          totalDetections: totalReportsCount 
-        }));
+          totalFeedback: totalFeedbackCount,
+          totalPesticides: totalPesticidesCount,
+          totalPests: totalPestsCount // Update totalPests stat
+        });
         setRecentDetections(recent);
+        setAllUsers(users); // Store all users for potential display
+        setAllFeedback(feedback); // Store all feedback for potential display
+        setAllPesticides(pesticides); // Store all pesticides for potential display
         
       } catch (err) {
         console.error('Error fetching admin data:', err);
@@ -54,38 +102,11 @@ function AdminDashboard() {
     };
 
     fetchAdminData();
-  }, []);
 
-  const adminFeatures = [
-    {
-      title: 'User Management',
-      description: 'Manage user accounts and permissions',
-      icon: '👥',
-      link: '/user-management',
-      color: '#2196f3'
-    },
-    {
-      title: 'Manage Feedback',
-      description: 'View and respond to user feedback',
-      icon: '💬',
-      link: '/manage-feedback',
-      color: '#ff9800'
-    },
-    {
-      title: 'Manage Pesticides',
-      description: 'Update pesticide information',
-      icon: '🧪',
-      link: '/manage-pesticides',
-      color: '#4caf50'
-    },
-    {
-      title: 'Pest Reports',
-      description: 'View all pest detection reports',
-      icon: '📊',
-      link: '/pest-reports',
-      color: '#9c27b0'
-    }
-  ];
+    const intervalId = setInterval(fetchAdminData, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
 
   if (loading) {
     return (
@@ -149,6 +170,13 @@ function AdminDashboard() {
             <h3 style={{ margin: '0 0 10px 0', color: '#ff9800' }}>Total Feedback</h3>
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ff9800' }}>
               {stats.totalFeedback}
+            </div>
+          </Card>
+          {/* New Card for Total Pests */}
+          <Card style={{ textAlign: 'center', background: '#e0f7fa' }}>
+            <h3 style={{ margin: '0 0 10px 0', color: '#00bcd4' }}>Total Pests</h3>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#00bcd4' }}>
+              {stats.totalPests}
             </div>
           </Card>
         </div>
@@ -282,7 +310,7 @@ function AdminDashboard() {
                 cursor: 'pointer'
               }}
             >
-              Manage Pesticides
+              Manage Pests and Pesticides
             </MyButton>
             
             <MyButton
