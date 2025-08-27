@@ -7,7 +7,7 @@ import DescriptionPage from './pages/DescriptionPage';
 import FeedbackPage from './pages/FeedbackPage';
 import AdminDashboard from './pages/AdminDashboard';
 import ManageFeedbackPage from './pages/ManageFeedbackPage';
-import ManagePesticidesPage from './pages/ManagePesticidesPage';
+import ManagePestsAndPesticidesPage from './pages/ManagePestsAndPesticidesPage'; // Renamed from ManagePesticidesPage
 import PestDetectPage from './pages/PestDetectPage';
 import PestReportsPage from './pages/PestReportsPage';
 import PestResultPage from './pages/PestResultPage';
@@ -59,7 +59,7 @@ function App() {
           <Route 
             path="/admin"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute adminOnly={true}> {/* Added adminOnly prop */}
                 <AdminDashboard />
               </ProtectedRoute>
             }
@@ -67,7 +67,7 @@ function App() {
           <Route 
             path="/user-management"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute adminOnly={true}> {/* Added adminOnly prop */}
                 <UserManagementPage />
               </ProtectedRoute>
             }
@@ -75,7 +75,7 @@ function App() {
           <Route 
             path="/manage-feedback"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute adminOnly={true}> {/* Added adminOnly prop */}
                 <ManageFeedbackPage />
               </ProtectedRoute>
             }
@@ -83,8 +83,8 @@ function App() {
           <Route 
             path="/manage-pesticides"
             element={
-              <ProtectedRoute>
-                <ManagePesticidesPage />
+              <ProtectedRoute adminOnly={true}>
+                <ManagePestsAndPesticidesPage />
               </ProtectedRoute>
             }
           />
