@@ -100,7 +100,7 @@ function HomePage() {
         </div>
 
         {/* Quick Stats */}
-        <div style={{ 
+        {/* <div style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
           gap: '20px', 
@@ -118,7 +118,7 @@ function HomePage() {
             <h3 style={{ margin: '0 0 10px 0', color: '#4caf50' }}>Pesticides</h3>
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4caf50' }}>0</div>
           </Card>
-        </div>
+        </div> */}
 
         {/* Main Features */}
         <h2 style={{ marginBottom: '20px', color: '#333' }}>Quick Actions</h2>

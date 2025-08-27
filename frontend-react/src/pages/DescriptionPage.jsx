@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Card from '../components/Card';
 import Alert from '../components/Alert';
 import BackgroundContainer from '../components/BackgroundContainer';
+import ApiService from '../services/api'; // Import ApiService
 
 function DescriptionPage() {
   const [pesticides, setPesticides] = useState([]);
@@ -12,104 +13,45 @@ function DescriptionPage() {
   const [activeTab, setActiveTab] = useState('pesticides');
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    // Simulate loading data
-    setTimeout(() => {
-      const samplePesticides = [
-        {
-          name: 'Insecticidal Soap',
-          type: 'Organic',
-          description: 'A natural pesticide made from potassium salts of fatty acids. Safe for plants and beneficial insects.',
-          usage: 'Mix 2-5 tablespoons per gallon of water. Apply to affected plants, covering both sides of leaves.',
-          safety: 'Low toxicity to humans and pets. Wash hands after use. Avoid contact with eyes.'
-        },
-        {
-          name: 'Neem Oil',
-          type: 'Organic',
-          description: 'Extracted from neem tree seeds, acts as both insecticide and fungicide.',
-          usage: 'Mix 1-2 tablespoons per gallon of water. Apply every 7-14 days as needed.',
-          safety: 'Generally safe but may cause skin irritation. Keep away from children and pets.'
-        },
-        {
-          name: 'Pyrethrin',
-          type: 'Natural',
-          description: 'Extracted from chrysanthemum flowers, effective against many insects.',
-          usage: 'Follow label instructions. Apply in evening to avoid harming beneficial insects.',
-          safety: 'Moderate toxicity. Wear protective gear and avoid breathing spray mist.'
-        },
-        {
-          name: 'Horticultural Oil',
-          type: 'Mineral',
-          description: 'Petroleum-based oil that suffocates insects and their eggs.',
-          usage: 'Apply during dormant season or when temperatures are below 90°F.',
-          safety: 'Can cause plant damage if applied in hot weather. Follow temperature guidelines.'
-        },
-        {
-          name: 'Diatomaceous Earth',
-          type: 'Natural',
-          description: 'Powdered fossilized algae that damages insect exoskeletons.',
-          usage: 'Dust lightly on affected areas. Reapply after rain or watering.',
-          safety: 'Low toxicity but avoid breathing dust. Wear mask during application.'
-        }
-      ];
+  const fetchAllData = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const fetchedPesticides = await ApiService.getPesticides();
+      setPesticides(fetchedPesticides);
 
-      const samplePests = [
-        {
-          name: 'Aphids',
-          category: 'Sap-Sucking Insects',
-          description: 'Small, soft-bodied insects that feed on plant sap. Usually green, black, or brown.',
-          damage: 'Cause yellowing leaves, stunted growth, honeydew secretion, and sooty mold.',
-          control: 'Use insecticidal soap, neem oil, or introduce ladybugs. Remove heavily infested leaves.'
-        },
-        {
-          name: 'Spider Mites',
-          category: 'Arachnids',
-          description: 'Tiny arachnids that create fine webbing on plants. Difficult to see with naked eye.',
-          damage: 'Cause stippling on leaves, webbing, leaf drop, and plant stress.',
-          control: 'Increase humidity, use miticides, or predatory mites. Regular misting helps.'
-        },
-        {
-          name: 'Whiteflies',
-          category: 'Flying Insects',
-          description: 'Small, white, winged insects that cluster on leaf undersides.',
-          damage: 'Cause yellowing, wilting, and transmit plant viruses.',
-          control: 'Use yellow sticky traps, insecticidal soap, or systemic insecticides.'
-        },
-        {
-          name: 'Mealybugs',
-          category: 'Scale Insects',
-          description: 'Small, white, cottony insects that feed on plant sap.',
-          damage: 'Cause stunted growth, yellowing leaves, and honeydew secretion.',
-          control: 'Remove manually with alcohol-soaked cotton swab or use systemic insecticide.'
-        },
-        {
-          name: 'Scale Insects',
-          category: 'Sap-Sucking Insects',
-          description: 'Small, immobile insects that appear as bumps on stems and leaves.',
-          damage: 'Cause yellowing, wilting, and honeydew secretion.',
-          control: 'Scrape off manually or use horticultural oil during dormant season.'
-        }
-      ];
-
-      setPesticides(samplePesticides);
-      setPestDescriptions(samplePests);
+      const fetchedPests = await ApiService.getPests();
+      setPestDescriptions(fetchedPests);
+    } catch (err) {
+      console.error('Error fetching data in DescriptionPage:', err);
+      setError('Failed to load information. Please check backend connection.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllData();
+    // Optionally refresh data periodically
+    const interval = setInterval(fetchAllData, 30000); // Refresh every 30 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const filteredPesticides = pesticides.filter(pesticide =>
     pesticide.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    pesticide.type.toLowerCase().includes(searchTerm.toLowerCase())
+    (pesticide.chemical_name && pesticide.chemical_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (pesticide.description && pesticide.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const filteredPests = pestDescriptions.filter(pest =>
     pest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    pest.category.toLowerCase().includes(searchTerm.toLowerCase())
+    (pest.description && pest.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   if (loading) {
     return (
       <BackgroundContainer>
+        <Navbar />
         <div style={{ textAlign: 'center', padding: '50px' }}>
           <div>Loading information...</div>
         </div>
@@ -124,7 +66,7 @@ function DescriptionPage() {
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <h1 style={{ color: '#1976d2', marginBottom: '10px' }}>Information Center</h1>
           <p style={{ color: '#666', margin: 0 }}>
-            Browse pesticides and pest information
+            Browse pests and pesticide information
           </p>
         </div>
 
@@ -163,7 +105,7 @@ function DescriptionPage() {
         </Card>
 
         {/* Tab Navigation */}
-        <div style={{ 
+        <div style={{
           display: 'flex', 
           gap: '10px', 
           marginBottom: '20px',
@@ -202,39 +144,41 @@ function DescriptionPage() {
 
         {/* Content */}
         {activeTab === 'pesticides' ? (
-          <div style={{ 
+          <div style={{
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
             gap: '20px' 
           }}>
-            {filteredPesticides.map((pesticide, index) => (
-              <Card key={index} style={{ 
+            {filteredPesticides.map((pesticide) => (
+              <Card key={pesticide.id} style={{
                 border: '2px solid #e8f5e8',
                 background: 'white'
               }}>
                 <div style={{ marginBottom: '15px' }}>
-                  <h3 style={{ 
+                  <h3 style={{
                     margin: '0 0 8px 0', 
                     color: '#2e7d32',
                     fontSize: '18px'
                   }}>
                     {pesticide.name}
                   </h3>
-                  <div style={{ 
-                    background: '#e8f5e8', 
-                    color: '#2e7d32', 
-                    padding: '4px 8px', 
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    display: 'inline-block'
-                  }}>
-                    {pesticide.type}
-                  </div>
+                  {pesticide.toxicity_level && (
+                    <div style={{
+                      background: '#e8f5e8', 
+                      color: '#2e7d32', 
+                      padding: '4px 8px', 
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      display: 'inline-block'
+                    }}>
+                      {pesticide.toxicity_level}
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ marginBottom: '15px' }}>
                   <h4 style={{ margin: '0 0 8px 0', color: '#333' }}>Description:</h4>
-                  <p style={{ 
+                  <p style={{
                     margin: 0, 
                     color: '#666', 
                     lineHeight: '1.6',
@@ -244,30 +188,30 @@ function DescriptionPage() {
                   </p>
                 </div>
 
-                {pesticide.usage && (
+                {pesticide.application_methods && (
                   <div style={{ marginBottom: '15px' }}>
-                    <h4 style={{ margin: '0 0 8px 0', color: '#333' }}>Usage:</h4>
-                    <p style={{ 
+                    <h4 style={{ margin: '0 0 8px 0', color: '#333' }}>Application Methods:</h4>
+                    <p style={{
                       margin: 0, 
                       color: '#666', 
                       lineHeight: '1.6',
                       fontSize: '14px'
                     }}>
-                      {pesticide.usage}
+                      {pesticide.application_methods}
                     </p>
                   </div>
                 )}
 
-                {pesticide.safety && (
+                {pesticide.safety_precautions && (
                   <div>
-                    <h4 style={{ margin: '0 0 8px 0', color: '#333' }}>Safety:</h4>
-                    <p style={{ 
+                    <h4 style={{ margin: '0 0 8px 0', color: '#333' }}>Safety Precautions:</h4>
+                    <p style={{
                       margin: 0, 
                       color: '#666', 
                       lineHeight: '1.6',
                       fontSize: '14px'
                     }}>
-                      {pesticide.safety}
+                      {pesticide.safety_precautions}
                     </p>
                   </div>
                 )}
@@ -275,39 +219,29 @@ function DescriptionPage() {
             ))}
           </div>
         ) : (
-          <div style={{ 
+          <div style={{
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
             gap: '20px' 
           }}>
-            {filteredPests.map((pest, index) => (
-              <Card key={index} style={{ 
+            {filteredPests.map((pest) => (
+              <Card key={pest.id} style={{
                 border: '2px solid #fff3e0',
                 background: 'white'
               }}>
                 <div style={{ marginBottom: '15px' }}>
-                  <h3 style={{ 
+                  <h3 style={{
                     margin: '0 0 8px 0', 
                     color: '#f57c00',
                     fontSize: '18px'
                   }}>
                     {pest.name}
                   </h3>
-                  <div style={{ 
-                    background: '#fff3e0', 
-                    color: '#f57c00', 
-                    padding: '4px 8px', 
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    display: 'inline-block'
-                  }}>
-                    {pest.category}
-                  </div>
                 </div>
 
                 <div style={{ marginBottom: '15px' }}>
                   <h4 style={{ margin: '0 0 8px 0', color: '#333' }}>Description:</h4>
-                  <p style={{ 
+                  <p style={{
                     margin: 0, 
                     color: '#666', 
                     lineHeight: '1.6',
@@ -316,34 +250,6 @@ function DescriptionPage() {
                     {pest.description}
                   </p>
                 </div>
-
-                {pest.damage && (
-                  <div style={{ marginBottom: '15px' }}>
-                    <h4 style={{ margin: '0 0 8px 0', color: '#333' }}>Damage:</h4>
-                    <p style={{ 
-                      margin: 0, 
-                      color: '#666', 
-                      lineHeight: '1.6',
-                      fontSize: '14px'
-                    }}>
-                      {pest.damage}
-                    </p>
-                  </div>
-                )}
-
-                {pest.control && (
-                  <div>
-                    <h4 style={{ margin: '0 0 8px 0', color: '#333' }}>Control:</h4>
-                    <p style={{ 
-                      margin: 0, 
-                      color: '#666', 
-                      lineHeight: '1.6',
-                      fontSize: '14px'
-                    }}>
-                      {pest.control}
-                    </p>
-                  </div>
-                )}
               </Card>
             ))}
           </div>

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Report, User  # Import User model
+from .models import Report, User, Feedback, Pesticide, Pest  # Import Pest model
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,4 +29,29 @@ class UserSerializer(serializers.ModelSerializer):
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
+        fields = '__all__'
+
+
+# New serializer for nested user data in Feedback
+class SmallUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    user = SmallUserSerializer(read_only=True, allow_null=True)
+
+    class Meta:
+        model = Feedback
+        fields = ('id', 'user', 'subject', 'message', 'timestamp', 'is_important') # Added 'is_important'
+
+
+class PesticideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pesticide
+        fields = '__all__'
+
+class PestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pest
         fields = '__all__'

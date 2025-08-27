@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Card from '../components/Card';
 import Alert from '../components/Alert';
-import MyButton from '../components/MyButton';
+// Removed MyButton, it will be replaced by standard button
 import BackgroundContainer from '../components/BackgroundContainer';
+import ApiService from '../services/api'; // Import ApiService
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 function FeedbackPage() {
+  const { user } = useAuth(); // Get authenticated user
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
     subject: '',
     message: '',
-    rating: 5
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -34,25 +34,26 @@ function FeedbackPage() {
     setSuccess('');
 
     try {
-      // Simulate API call since we removed authentication
-      setTimeout(() => {
-        setSuccess('Feedback submitted successfully! Thank you for your input.');
-        // Clear form
-        setFormData({
-          name: '',
-          email: '',
-          subject: '',
-          message: '',
-          rating: 5
-        });
-        setLoading(false);
-        // Redirect to home after 3 seconds
-        setTimeout(() => {
-          navigate('/');
-        }, 3000);
-      }, 1500);
+      const feedbackData = {
+        subject: formData.subject,
+        message: formData.message,
+        // The backend will associate the user if authenticated via perform_create
+        // No need to send user ID from frontend here
+      };
+
+      await ApiService.submitFeedback(feedbackData);
+
+      setSuccess('Feedback submitted successfully! Thank you for your input.');
+      // Clear form
+      setFormData({
+        subject: '',
+        message: '',
+      });
+      setLoading(false);
+      // No automatic redirect, let user stay on page to see success message
     } catch (err) {
-      setError('Network error. Please try again.');
+      console.error('Error submitting feedback:', err);
+      setError(`Failed to submit feedback: ${err.message || 'Unknown error'}`);
       setLoading(false);
     }
   };
@@ -73,59 +74,8 @@ function FeedbackPage() {
 
         <Card>
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '8px', 
-                color: '#333',
-                fontWeight: '500'
-              }}>
-                Name *
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Enter your name"
-                required
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontSize: '16px',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '8px', 
-                color: '#333',
-                fontWeight: '500'
-              }}>
-                Email *
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Enter your email"
-                required
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontSize: '16px',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
+            {/* Removed Name and Email fields as backend automatically associates user if authenticated */}
 
             <div style={{ marginBottom: '20px' }}>
               <label style={{ 
@@ -154,37 +104,7 @@ function FeedbackPage() {
               />
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '8px', 
-                color: '#333',
-                fontWeight: '500'
-              }}>
-                Rating
-              </label>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, rating: star }))}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      fontSize: '24px',
-                      cursor: 'pointer',
-                      color: star <= formData.rating ? '#ffd700' : '#ddd'
-                    }}
-                  >
-                    ★
-                  </button>
-                ))}
-                <span style={{ color: '#666', marginLeft: '10px' }}>
-                  {formData.rating} out of 5
-                </span>
-              </div>
-            </div>
+            {/* Removed Rating field as not part of backend model */}
 
             <div style={{ marginBottom: '20px' }}>
               <label style={{ 
@@ -216,7 +136,7 @@ function FeedbackPage() {
             </div>
 
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <MyButton
+              <button
                 type="submit"
                 disabled={loading}
                 style={{
@@ -232,9 +152,9 @@ function FeedbackPage() {
                 }}
               >
                 {loading ? 'Submitting...' : 'Submit Feedback'}
-              </MyButton>
+              </button>
               
-              <MyButton
+              <button
                 type="button"
                 onClick={() => navigate('/')}
                 style={{
@@ -248,7 +168,7 @@ function FeedbackPage() {
                 }}
               >
                 Cancel
-              </MyButton>
+              </button>
             </div>
           </form>
         </Card>
