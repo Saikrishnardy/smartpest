@@ -6,16 +6,21 @@ from django.http import JsonResponse
 from rest_framework import status # Import status
 from rest_framework.authtoken.models import Token # Import Token
 from django.contrib.auth import authenticate # Import authenticate
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser # Import IsAdminUser
+from rest_framework.decorators import permission_classes # Import permission_classes decorator
 
 from .inference import predict_image
-from .models import Report, User  # Import the User model
-from .serializers import ReportSerializer, UserSerializer # Import UserSerializer
+from .models import Report, User, Feedback, Pesticide, Pest  # Import the User, Feedback, Pesticide, and Pest model
+from .serializers import ReportSerializer, UserSerializer, FeedbackSerializer, PesticideSerializer, PestSerializer # Import PestSerializer
 import tempfile
 import json
 import os
 
+from rest_framework import generics # Import generics for CreateAPIView and ListAPIView
+
 class PestDetectionView(APIView):
     parser_classes = [MultiPartParser]
+    permission_classes = [IsAuthenticatedOrReadOnly] # Apply permission here
 
     def post(self, request, format=None):
         image_file = request.FILES.get('image')
@@ -40,6 +45,7 @@ class PestDetectionView(APIView):
                 os.unlink(temp_path)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly]) # Apply permission here
 def pest_info(request, pest_name):
     """Get detailed information about a specific pest"""
     # Paths to the JSON files
@@ -71,6 +77,7 @@ def pest_info(request, pest_name):
     })
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated]) # Apply permission here
 def save_report(request):
     """Save a pest detection report"""
     try:
@@ -90,13 +97,77 @@ def save_report(request):
 
 class ReportListView(APIView):
     """List all pest detection reports"""
+    permission_classes = [IsAuthenticatedOrReadOnly] # Apply permission here
     def get(self, request, format=None):
         reports = Report.objects.all().order_by('-timestamp') # Order by most recent
         serializer = ReportSerializer(reports, many=True)
         return Response(serializer.data)
 
 
+class UserListView(APIView):
+    """List all registered users"""
+    permission_classes = [IsAuthenticatedOrReadOnly] # Apply permission here
+    def get(self, request, format=None):
+        users = User.objects.all().order_by('first_name')
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+class FeedbackListView(generics.ListAPIView):
+    queryset = Feedback.objects.all().select_related('user').order_by('-timestamp')
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly] # Apply permission here
+
+class FeedbackCreateView(generics.CreateAPIView):
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAuthenticated] # Apply permission here
+
+    def perform_create(self, serializer):
+        print(f"FeedbackCreateView - User authenticated: {self.request.user.is_authenticated}")
+        print(f"FeedbackCreateView - Request user: {self.request.user}")
+        if self.request.user.is_authenticated:
+            serializer.save(user=self.request.user)
+        else:
+            serializer.save()
+
+class FeedbackDestroyView(generics.DestroyAPIView):
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAdminUser]
+
+class FeedbackUpdateView(generics.UpdateAPIView):
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAdminUser]
+    # Allow partial updates for fields like is_important
+    def get_serializer(self, *args, **kwargs):
+        kwargs['partial'] = True
+        return super().get_serializer(*args, **kwargs)
+
+
+class PesticideListView(generics.ListCreateAPIView):
+    queryset = Pesticide.objects.all().order_by('name')
+    serializer_class = PesticideSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly] # Apply permission here
+
+class PesticideDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Pesticide.objects.all()
+    serializer_class = PesticideSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly] # Apply permission here
+
+
+class PestListView(generics.ListCreateAPIView):
+    queryset = Pest.objects.all().order_by('name')
+    serializer_class = PestSerializer
+    permission_classes = [IsAdminUser]
+
+class PestDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Pest.objects.all()
+    serializer_class = PestSerializer
+    permission_classes = [IsAdminUser]
+
 @api_view(['POST'])
+@permission_classes([AllowAny]) # Allow unauthenticated access for registration
 def register_user(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
@@ -114,6 +185,7 @@ def register_user(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny]) # Allow unauthenticated access for login
 def login_user(request):
     email = request.data.get('email')
     password = request.data.get('password')

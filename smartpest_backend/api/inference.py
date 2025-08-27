@@ -19,7 +19,7 @@ def load_model():
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Using device: {device}")
         # Load class names
-        class_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "classes.txt")
+        class_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "classes.txt")
         with open(class_file, "r") as f:
             class_names = [line.strip() for line in f.readlines() if line.strip()]
         print(f"Loaded {len(class_names)} pest classes")
@@ -112,7 +112,7 @@ def predict_image(image_path):
 print("🔄 Initializing SmartPest ML Model...")
 model_loaded = load_model()
 if model_loaded:
-    print("🎉 Full ML model loaded with all 132 pest classes!")
+    print("🎉 Full ML model loaded with all 131 pest classes!")
 else:
     print("⚠️  Using mock predictions (ML model not available)")
     print("📋 To load the full model, you need the actual model weights file")

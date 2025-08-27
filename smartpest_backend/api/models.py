@@ -50,3 +50,33 @@ class Report(models.Model):
 
     def __str__(self):
         return f"{self.pest_name} - {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
+
+
+class Feedback(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    subject = models.CharField(max_length=255)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_important = models.BooleanField(default=False) # New field
+
+    def __str__(self):
+        return f"Feedback by {self.user.email if self.user else 'Anonymous'} - {self.subject} ({self.timestamp.strftime('%Y-%m-%d %H:%M')})"
+
+
+class Pesticide(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+    chemical_name = models.CharField(max_length=255, blank=True, null=True)
+    toxicity_level = models.CharField(max_length=50, blank=True, null=True) # e.g., 'Low', 'Moderate', 'High'
+    application_methods = models.TextField(blank=True, null=True)
+    safety_precautions = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class Pest(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name

@@ -20,7 +20,12 @@ function Navbar() {
             <Link to="/pest-detect" style={{ color: '#fff', textDecoration: 'none' }}>Detect Pest</Link>
             <Link to="/pest-reports" style={{ color: '#fff', textDecoration: 'none' }}>Pest Reports</Link>
             {user && user.role === 'admin' && (
-              <Link to="/admin" style={{ color: '#fff', textDecoration: 'none' }}>Admin Dashboard</Link>
+              <>
+                <Link to="/admin" style={{ color: '#fff', textDecoration: 'none' }}>Admin Dashboard</Link>
+                <Link to="/user-management" style={{ color: '#fff', textDecoration: 'none' }}>User Management</Link>
+                <Link to="/manage-feedback" style={{ color: '#fff', textDecoration: 'none' }}>Manage Feedback</Link>
+                <Link to="/manage-pesticides" style={{ color: '#fff', textDecoration: 'none' }}>Manage Pests and Pesticides</Link> {/* Renamed link text */}
+              </>
             )}
           </>
         )}
