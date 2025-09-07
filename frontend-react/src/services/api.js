@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
 class ApiService {
   static async detectPest(imageFile) {
@@ -280,12 +280,7 @@ class ApiService {
 
   static async getPests() {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`${API_BASE_URL}/pests/`, {
-        headers: {
-          'Authorization': `Token ${token}`,
-        },
-      });
+      const response = await fetch(`${API_BASE_URL}/pests/`);
 
       if (!response.ok) {
         const errorData = await response.json();
