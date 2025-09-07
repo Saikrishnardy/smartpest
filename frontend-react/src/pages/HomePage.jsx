@@ -76,49 +76,9 @@ function HomePage() {
           <p style={{ margin: 0, opacity: 0.9 }}>
             SmartPest helps you identify and manage pests effectively
           </p>
-          
-          {/* Test Navigation Button */}
-          <div style={{ marginTop: '20px' }}>
-            <button
-              onClick={() => {
-                console.log('Test button clicked - navigating to pest-detect');
-                navigate('/pest-detect');
-              }}
-              style={{
-                padding: '10px 20px',
-                background: 'rgba(255,255,255,0.2)',
-                color: 'white',
-                border: '2px solid white',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '16px'
-              }}
-            >
-              🧪 Test Navigation to Pest Detection
-            </button>
-          </div>
+        
         </div>
 
-        {/* Quick Stats */}
-        {/* <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '20px', 
-          marginBottom: '30px' 
-        }}>
-          <Card style={{ textAlign: 'center', background: '#e3f2fd' }}>
-            <h3 style={{ margin: '0 0 10px 0', color: '#1976d2' }}>Total Detections</h3>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1976d2' }}>0</div>
-          </Card>
-          <Card style={{ textAlign: 'center', background: '#f3e5f5' }}>
-            <h3 style={{ margin: '0 0 10px 0', color: '#9c27b0' }}>Reports</h3>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#9c27b0' }}>0</div>
-          </Card>
-          <Card style={{ textAlign: 'center', background: '#e8f5e8' }}>
-            <h3 style={{ margin: '0 0 10px 0', color: '#4caf50' }}>Pesticides</h3>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4caf50' }}>0</div>
-          </Card>
-        </div> */}
 
         {/* Main Features */}
         <h2 style={{ marginBottom: '20px', color: '#333' }}>Quick Actions</h2>

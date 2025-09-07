@@ -171,53 +171,6 @@ function PestDetectPage() {
             Upload an image to detect and identify pests
           </p>
         </div>
-
-        {/* Debug Section */}
-        <Card style={{ marginBottom: '20px', background: '#fff3cd', border: '1px solid #ffeaa7' }}>
-          <h3 style={{ marginBottom: '15px', color: '#856404' }}>🔧 Debug Information</h3>
-          <div style={{ color: '#856404', fontSize: '14px' }}>
-            <p><strong>Current URL:</strong> {window.location.pathname}</p>
-            <p><strong>Selected File:</strong> {selectedFile ? selectedFile.name : 'None'}</p>
-            <p><strong>Loading State:</strong> {loading ? 'Yes' : 'No'}</p>
-            <p><strong>Error State:</strong> {error || 'None'}</p>
-          </div>
-          <div style={{ marginTop: '15px' }}>
-            <button
-              onClick={() => {
-                console.log('Direct navigation test');
-                window.location.href = '/pest-result';
-              }}
-              style={{
-                padding: '8px 16px',
-                background: '#dc3545',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginRight: '10px'
-              }}
-            >
-              Test Direct Navigation
-            </button>
-            <button
-              onClick={() => {
-                console.log('Navigate test');
-                navigate('/pest-result');
-              }}
-              style={{
-                padding: '8px 16px',
-                background: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Test React Router Navigation
-            </button>
-          </div>
-        </Card>
-
         {error && <Alert type="error" message={error} />}
         {success && <Alert type="success" message={success} />}
 
