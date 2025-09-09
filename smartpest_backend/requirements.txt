@@ -4,6 +4,7 @@ django-cors-headers==4.4.0
 gunicorn==22.0.0
 requests==2.32.3
 whitenoise==6.6.0
+psycopg[binary]==3.2.1
 torch==2.8.0
 timm==0.6.13 # This version might need adjustment depending on your model
 Pillow==10.4.0 
