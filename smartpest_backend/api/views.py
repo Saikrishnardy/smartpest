@@ -1,21 +1,31 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
-from rest_framework import status # Import status
-from rest_framework.authtoken.models import Token # Import Token
-from django.contrib.auth import authenticate # Import authenticate
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
+from rest_framework.permissions import (
+    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
+)
 
 from .inference import predict_image
-from .models import Report, User  # Import the User model
-from .serializers import ReportSerializer, UserSerializer # Import UserSerializer
+from .models import Report, User, Feedback, Pesticide, Pest
+from .serializers import (
+    ReportSerializer, UserSerializer, FeedbackSerializer,
+    PesticideSerializer, PestSerializer
+)
 import tempfile
 import json
 import os
 
+from rest_framework import generics
+
+
 class PestDetectionView(APIView):
     parser_classes = [MultiPartParser]
+    permission_classes = [AllowAny]
 
     def post(self, request, format=None):
         image_file = request.FILES.get('image')
@@ -29,40 +39,46 @@ class PestDetectionView(APIView):
             temp_path = temp.name
 
         try:
-            # Predict
             result = predict_image(temp_path)
             return Response(result)
         except Exception as e:
             return Response({"error": f"Prediction failed: {str(e)}"}, status=500)
         finally:
-            # Clean up temporary file
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
 
+
 @api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def pest_info(request, pest_name):
     """Get detailed information about a specific pest"""
-    # Paths to the JSON files
     base_dir = os.path.dirname(os.path.abspath(__file__))
     desc_path = os.path.join(base_dir, 'pest_description.json')
     pest_path = os.path.join(base_dir, 'pesticides_info.json')
 
-    # Load descriptions
-    with open(desc_path, 'r', encoding='utf-8') as f:
-        desc_data = json.load(f)
-    desc_dict = {item['pest_name']: item['description'] for item in desc_data}
+    try:
+        with open(desc_path, 'r', encoding='utf-8') as f:
+            desc_data = json.load(f)
+        desc_dict = {item['pest_name']: item['description'] for item in desc_data}
+    except FileNotFoundError:
+        desc_dict = {}
 
-    # Load pesticides
-    with open(pest_path, 'r', encoding='utf-8') as f:
-        pest_data = json.load(f)
-    pest_dict = {item['pest_name']: item['pesticides'] for item in pest_data}
+    try:
+        with open(pest_path, 'r', encoding='utf-8') as f:
+            pest_data = json.load(f)
+        pest_dict = {item['pest_name']: item['pesticides'] for item in pest_data}
+    except FileNotFoundError:
+        pest_dict = {}
 
-    # Try to find the pest
     description = desc_dict.get(pest_name, 'No detailed description available.')
     pesticides = pest_dict.get(pest_name, [])
 
     if not pesticides:
-        pesticides = [{'name': 'No pesticide data available', 'dosage': '', 'safety_precautions': ''}]
+        pesticides = [{
+            'name': 'No pesticide data available',
+            'dosage': '',
+            'safety_precautions': ''
+        }]
 
     return JsonResponse({
         'pest_name': pest_name,
@@ -70,7 +86,9 @@ def pest_info(request, pest_name):
         'pesticides': pesticides
     })
 
+
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def save_report(request):
     """Save a pest detection report"""
     try:
@@ -80,8 +98,8 @@ def save_report(request):
             serializer.save()
             return JsonResponse({
                 "message": "Report saved successfully",
-                "report_id": serializer.data['id']  # Return the ID from the saved object
-            }, status=201) # 201 Created
+                "report_id": serializer.data['id']
+            }, status=201)
         else:
             return JsonResponse(serializer.errors, status=400)
     except Exception as e:
@@ -89,19 +107,84 @@ def save_report(request):
 
 
 class ReportListView(APIView):
-    """List all pest detection reports"""
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request, format=None):
-        reports = Report.objects.all().order_by('-timestamp') # Order by most recent
+        reports = Report.objects.all().order_by('-timestamp')
         serializer = ReportSerializer(reports, many=True)
         return Response(serializer.data)
 
 
+class UserListView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request, format=None):
+        users = User.objects.all().order_by('first_name')
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+
+class FeedbackListView(generics.ListAPIView):
+    queryset = Feedback.objects.all().select_related('user').order_by('-timestamp')
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+class FeedbackCreateView(generics.CreateAPIView):
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class FeedbackDestroyView(generics.DestroyAPIView):
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAdminUser]
+
+
+class FeedbackUpdateView(generics.UpdateAPIView):
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_serializer(self, *args, **kwargs):
+        kwargs['partial'] = True
+        return super().get_serializer(*args, **kwargs)
+
+
+class PesticideListView(generics.ListCreateAPIView):
+    queryset = Pesticide.objects.all().order_by('name')
+    serializer_class = PesticideSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+class PesticideDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Pesticide.objects.all()
+    serializer_class = PesticideSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+class PestListView(generics.ListCreateAPIView):
+    queryset = Pest.objects.all().order_by('name')
+    serializer_class = PestSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+class PestDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Pest.objects.all()
+    serializer_class = PestSerializer
+    permission_classes = [IsAdminUser]
+
+
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def register_user(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        # Set username to email if it's not provided or required by AbstractUser
         if not user.username:
             user.username = user.email
             user.save()
@@ -114,23 +197,22 @@ def register_user(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login_user(request):
     email = request.data.get('email')
     password = request.data.get('password')
 
     if not email or not password:
-        return Response({"detail": "Email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Email and password are required"}, status=400)
 
-    # Use authenticate with the email as username for custom user model
     user = authenticate(request, username=email, password=password)
 
     if user is not None:
         token, created = Token.objects.get_or_create(user=user)
-        # Using UserSerializer to get user data consistent with registration
         serializer = UserSerializer(user)
         return Response({
             'user': serializer.data,
             'token': token.key
         })
     else:
-        return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"detail": "Invalid credentials"}, status=401)
