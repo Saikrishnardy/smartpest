@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-nd5u*ceromkhlo7mw-553
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['.render.com', '.netlify.app', '.vercel.app', 'localhost', '127.0.0.1'] # Add your Render and frontend domains here
+ALLOWED_HOSTS = ['smartpest.onrender.com', '.render.com', '.netlify.app', '.vercel.app', 'localhost', '127.0.0.1'] # Add your Render and frontend domains here
 
 
 # Application definition

@@ -73,6 +73,9 @@ def load_model():
 def predict_image(image_path):
     global model, transform, class_names, device
     try:
+        # Ensure model is loaded before prediction
+        ensure_model_loaded()
+        
         # Verify the image can be opened
         image = Image.open(image_path).convert("RGB")
         # If model is loaded, use it
@@ -109,10 +112,19 @@ def predict_image(image_path):
     except Exception as e:
         return {"error": f"Failed to process image: {e}"}
 
-print("🔄 Initializing SmartPest ML Model...")
-model_loaded = load_model()
-if model_loaded:
-    print("🎉 Full ML model loaded with all 131 pest classes!")
-else:
-    print("⚠️  Using mock predictions (ML model not available)")
-    print("📋 To load the full model, you need the actual model weights file")
+# Lazy loading - only load model when first prediction is made
+model_loaded = False
+model = None
+class_names = None
+
+def ensure_model_loaded():
+    """Load model only when needed to avoid startup crashes"""
+    global model_loaded, model, class_names
+    if not model_loaded:
+        print("🔄 Initializing SmartPest ML Model...")
+        model_loaded = load_model()
+        if model_loaded:
+            print("🎉 Full ML model loaded with all 131 pest classes!")
+        else:
+            print("⚠️  Using mock predictions (ML model not available)")
+            print("📋 To load the full model, you need the actual model weights file")
