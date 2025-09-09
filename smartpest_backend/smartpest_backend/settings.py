@@ -88,15 +88,15 @@ WSGI_APPLICATION = 'smartpest_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Database configuration for production (Render)
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql', # Change to PostgreSQL
-        'NAME': 'smartpestdb', # Replace with your Render database name
-        'USER': 'smartpestuser', # Replace with your Render database user
-        'PASSWORD': 'your_database_password', # Replace with your Render database password
-        'HOST': 'your-render-db-host', # Replace with your Render database host
-        'PORT': '5432', # Default PostgreSQL port
-    }
+    'default': dj_database_url.parse(
+        os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 

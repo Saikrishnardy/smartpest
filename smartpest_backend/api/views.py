@@ -96,8 +96,8 @@ def save_report(request):
         serializer = ReportSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse({
-                "message": "Report saved successfully",
+        return JsonResponse({
+            "message": "Report saved successfully",
                 "report_id": serializer.data['id']
             }, status=201)
         else:
