@@ -137,6 +137,15 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://localhost:5173",  # Vite dev server
     "http://127.0.0.1:5173",  # Vite dev server alternative
+    "https://smartpest.vercel.app",
+    "https://smartpest-git-main-sairdys-projects.vercel.app",
+]
+
+# Trust Vercel origins for CSRF-protected endpoints
+CSRF_TRUSTED_ORIGINS = [
+    "https://smartpest.vercel.app",
+    "https://smartpest-git-main-sairdys-projects.vercel.app",
+    "https://*.onrender.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
