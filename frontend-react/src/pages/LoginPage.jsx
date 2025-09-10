@@ -5,6 +5,7 @@ import MyButton from '../components/MyButton';
 import Alert from '../components/Alert';
 import BackgroundContainer from '../components/BackgroundContainer';
 import { useAuth } from '../context/AuthContext'; // Import useAuth
+import ApiService from '../services/api';
 
 function LoginPage() {
   const [formData, setFormData] = useState({
@@ -32,26 +33,11 @@ function LoginPage() {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess('Login successful!');
-        // Instead of directly setting localStorage, use the login function from AuthContext
-        login(data.user, data.token);
-        // The navigate call is handled by the AuthContext login function now
-      } else {
-        setError(data.message || 'Login failed');
-      }
+      const data = await ApiService.login(formData);
+      setSuccess('Login successful!');
+      login(data.user, data.token);
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err.message || 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }

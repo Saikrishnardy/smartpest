@@ -1,6 +1,44 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const RAW_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = RAW_BASE.endsWith('/api') ? RAW_BASE : `${RAW_BASE.replace(/\/$/, '')}/api`;
 
 class ApiService {
+  static async login(credentials) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/login/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+      return data;
+    } catch (error) {
+      console.error('API Error during login:', error);
+      throw error;
+    }
+  }
+
+  static async register(payload) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/register/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          data.message || data.detail || (data.email && data.email[0]) || (data.password && data.password[0]) || 'Signup failed.'
+        );
+      }
+      return data;
+    } catch (error) {
+      console.error('API Error during register:', error);
+      throw error;
+    }
+  }
   static async detectPest(imageFile) {
     try {
       const formData = new FormData();

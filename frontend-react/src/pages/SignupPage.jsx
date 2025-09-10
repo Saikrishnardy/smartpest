@@ -4,6 +4,7 @@ import MyTextField from '../components/MyTextField';
 import MyButton from '../components/MyButton';
 import Alert from '../components/Alert';
 import BackgroundContainer from '../components/BackgroundContainer';
+import ApiService from '../services/api';
 
 function SignupPage() {
   const [formData, setFormData] = useState({
@@ -55,23 +56,15 @@ function SignupPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/register/', { // Corrected endpoint from /api/signup/ to /api/register/
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password
-        }),
+      await ApiService.register({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      {
         setSuccess('Account created successfully! Please sign in.');
         // Clear form
         setFormData({
@@ -86,13 +79,9 @@ function SignupPage() {
         setTimeout(() => {
           navigate('/login');
         }, 2000);
-      } else {
-        // Log the full error response from the backend
-        console.error('Signup failed with response:', data);
-        setError(data.message || data.detail || (data.email && data.email[0]) || (data.password && data.password[0]) || 'Signup failed. Please check your input and try again.');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err.message || 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }
