@@ -1,5 +1,12 @@
 const RAW_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 const API_BASE_URL = RAW_BASE.endsWith('/api') ? RAW_BASE : `${RAW_BASE.replace(/\/$/, '')}/api`;
+// Debug: surface the resolved API URL at runtime to diagnose env propagation
+try {
+  /* eslint-disable no-console */
+  console.log('SmartPest API URL (RAW_BASE):', RAW_BASE);
+  console.log('SmartPest API URL (API_BASE_URL):', API_BASE_URL);
+  /* eslint-enable no-console */
+} catch (_) {}
 
 class ApiService {
   static async login(credentials) {
