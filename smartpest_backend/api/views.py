@@ -23,6 +23,35 @@ import os
 from rest_framework import generics
 
 
+def _ensure_admin_flags(user: User) -> None:
+    """Promote the user to admin if email is in SMARTPEST_ADMIN_EMAILS or if no admin exists yet."""
+    try:
+        allowed_emails = os.environ.get('SMARTPEST_ADMIN_EMAILS', '')
+        allowed = {e.strip().lower() for e in allowed_emails.split(',') if e.strip()}
+    except Exception:
+        allowed = set()
+
+    should_promote = False
+    if user.email and user.email.lower() in allowed:
+        should_promote = True
+    # Fallback: if there is no staff user yet, promote the first successful login/registration
+    elif not User.objects.filter(is_staff=True).exists():
+        should_promote = True
+
+    if should_promote:
+        changed = False
+        if user.role != 'admin':
+            user.role = 'admin'
+            changed = True
+        if not user.is_staff:
+            user.is_staff = True
+            changed = True
+        if not user.is_superuser:
+            user.is_superuser = True
+            changed = True
+        if changed:
+            user.save()
+
 class PestDetectionView(APIView):
     parser_classes = [MultiPartParser]
     permission_classes = [AllowAny]
@@ -191,6 +220,7 @@ def register_user(request):
         if not user.username:
             user.username = user.email
             user.save()
+        _ensure_admin_flags(user)
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'user': serializer.data,
@@ -211,6 +241,7 @@ def login_user(request):
     user = authenticate(request, username=email, password=password)
 
     if user is not None:
+        _ensure_admin_flags(user)
         token, created = Token.objects.get_or_create(user=user)
         serializer = UserSerializer(user)
         return Response({
