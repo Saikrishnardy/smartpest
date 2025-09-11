@@ -59,19 +59,22 @@ def pest_info(request, pest_name):
     try:
         with open(desc_path, 'r', encoding='utf-8') as f:
             desc_data = json.load(f)
-        desc_dict = {item['pest_name']: item['description'] for item in desc_data}
+        # Normalize keys to lowercase for case-insensitive matching
+        desc_dict = {str(item.get('pest_name', '')).strip().lower(): item.get('description', '') for item in desc_data}
     except FileNotFoundError:
         desc_dict = {}
 
     try:
         with open(pest_path, 'r', encoding='utf-8') as f:
             pest_data = json.load(f)
-        pest_dict = {item['pest_name']: item['pesticides'] for item in pest_data}
+        # Normalize keys to lowercase for case-insensitive matching
+        pest_dict = {str(item.get('pest_name', '')).strip().lower(): item.get('pesticides', []) for item in pest_data}
     except FileNotFoundError:
         pest_dict = {}
 
-    description = desc_dict.get(pest_name, 'No detailed description available.')
-    pesticides = pest_dict.get(pest_name, [])
+    normalized_name = str(pest_name).strip().lower()
+    description = desc_dict.get(normalized_name, 'No detailed description available.')
+    pesticides = pest_dict.get(normalized_name, [])
 
     if not pesticides:
         pesticides = [{
@@ -88,7 +91,7 @@ def pest_info(request, pest_name):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def save_report(request):
     """Save a pest detection report"""
     try:
@@ -96,8 +99,8 @@ def save_report(request):
         serializer = ReportSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse({
-                "message": "Report saved successfully",
+        return JsonResponse({
+            "message": "Report saved successfully",
                 "report_id": serializer.data['id']
             }, status=201)
         else:
