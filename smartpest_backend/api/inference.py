@@ -56,8 +56,11 @@ def load_model():
                         print("\u26a0\ufe0f  Model file is a Git LFS pointer. Trying pre-trained model...")
                         raise Exception("Git LFS pointer")
                 # Try to load the actual model
-                model.load_state_dict(torch.load(model_path, map_location=device))
+                state = torch.load(model_path, map_location=device)
+                missing, unexpected = model.load_state_dict(state, strict=False)
                 model.eval()
+                if missing or unexpected:
+                    print(f"⚠️  Loaded with non-strict mode. Missing keys: {len(missing)}, Unexpected keys: {len(unexpected)}")
                 print("✅ Actual ML model loaded successfully!")
                 return True
             except Exception as e:
