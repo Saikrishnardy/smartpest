@@ -1,1 +1,1 @@
-web: gunicorn smartpest_backend.wsgi --log-file -
+web: python manage.py collectstatic --noinput && python manage.py migrate && gunicorn smartpest_backend.wsgi --bind 0.0.0.0:$PORT --timeout 120 --log-file -
